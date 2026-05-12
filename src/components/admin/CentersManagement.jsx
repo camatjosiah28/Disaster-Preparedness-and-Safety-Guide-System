@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Phone, Users } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Edit, Trash2, Phone, Users, MapPin, Navigation } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 
-const CentersManagement = () => {
+const CentersManagement = ({ refreshTrigger }) => {
   const [centers, setCenters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -17,11 +17,7 @@ const CentersManagement = () => {
     status: 'Open'
   });
 
-  useEffect(() => {
-    fetchCenters();
-  }, []);
-
-  const fetchCenters = async () => {
+  const fetchCenters = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -36,32 +32,86 @@ const CentersManagement = () => {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchCenters();
+  }, [fetchCenters, refreshTrigger]);
+
+  const openGoogleMaps = (center) => {
+    if (center.latitude && center.longitude) {
+      window.open(`https://www.google.com/maps?q=${center.latitude},${center.longitude}`, '_blank');
+    } else if (center.address) {
+      const encodedAddress = encodeURIComponent(center.address);
+      window.open(`https://www.google.com/maps/search/${encodedAddress}`, '_blank');
+    } else {
+      alert('No location data available for this center.');
+    }
+  };
+
+  const openWaze = (center) => {
+    if (center.latitude && center.longitude) {
+      window.open(`https://www.waze.com/ul?ll=${center.latitude},${center.longitude}&navigate=yes`, '_blank');
+    } else if (center.address) {
+      const encodedAddress = encodeURIComponent(center.address);
+      window.open(`https://www.waze.com/ul?q=${encodedAddress}&navigate=yes`, '_blank');
+    } else {
+      alert('No location data available for this center.');
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (loading) return;
+    
     try {
       if (editingCenter) {
+        // Update existing center
         const { error } = await supabase
           .from('evacuation_centers')
-          .update(formData)
+          .update({
+            center_name: formData.center_name,
+            address: formData.address,
+            latitude: formData.latitude || null,
+            longitude: formData.longitude || null,
+            capacity: formData.capacity ? parseInt(formData.capacity) : null,
+            contact_number: formData.contact_number || null,
+            status: formData.status
+          })
           .eq('center_id', editingCenter.center_id);
         
         if (error) throw error;
+        console.log('Center updated successfully');
       } else {
+        // Insert new center
         const { error } = await supabase
           .from('evacuation_centers')
-          .insert([formData]);
+          .insert([{
+            center_name: formData.center_name,
+            address: formData.address,
+            latitude: formData.latitude || null,
+            longitude: formData.longitude || null,
+            capacity: formData.capacity ? parseInt(formData.capacity) : null,
+            contact_number: formData.contact_number || null,
+            status: formData.status
+          }]);
         
         if (error) throw error;
+        console.log('Center created successfully');
       }
       
-      fetchCenters();
+      // Refresh the list
+      await fetchCenters();
+      
+      // Close modal and reset form
       setShowModal(false);
       resetForm();
+      
     } catch (error) {
       console.error('Error saving center:', error);
-      alert('Error saving center. Please try again.');
+      alert('Error saving center: ' + error.message);
     }
   };
 
@@ -95,6 +145,24 @@ const CentersManagement = () => {
     });
   };
 
+  const openModal = (center = null) => {
+    if (center) {
+      setEditingCenter(center);
+      setFormData({
+        center_name: center.center_name || '',
+        address: center.address || '',
+        latitude: center.latitude || '',
+        longitude: center.longitude || '',
+        capacity: center.capacity || '',
+        contact_number: center.contact_number || '',
+        status: center.status || 'Open'
+      });
+    } else {
+      resetForm();
+    }
+    setShowModal(true);
+  };
+
   if (loading) {
     return (
       <div className="admin-loading">
@@ -111,10 +179,7 @@ const CentersManagement = () => {
           <p style={{ color: 'var(--gray-dark)' }}>Manage all evacuation centers and their status</p>
         </div>
         <button
-          onClick={() => {
-            resetForm();
-            setShowModal(true);
-          }}
+          onClick={() => openModal()}
           className="admin-btn admin-btn-primary"
           style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
         >
@@ -127,7 +192,7 @@ const CentersManagement = () => {
           <div key={center.center_id} className="center-card safe-center">
             <div className="center-header">
               <div className="center-icon">🏥</div>
-              <div className={`status-badge ${center.status === 'Open' ? 'open' : 'closed'}`}>
+              <div className={`status-badge ${center.status === 'Open' ? 'open' : center.status === 'Full' ? 'full' : 'closed'}`}>
                 {center.status || 'Open'}
               </div>
             </div>
@@ -141,13 +206,63 @@ const CentersManagement = () => {
             <div className="center-capacity">
               <Users size={14} /> {center.current_occupancy || 0} / {center.capacity || 0} occupants
             </div>
+            
+            {/* Map Buttons */}
+            {(center.latitude || center.address) && (
+              <div style={{ 
+                marginTop: '15px', 
+                display: 'flex', 
+                gap: '10px',
+                paddingTop: '10px',
+                borderTop: '1px solid #e9ecef'
+              }}>
+                <button
+                  onClick={() => openGoogleMaps(center)}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px',
+                    padding: '8px',
+                    background: '#4285f4',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '500'
+                  }}
+                >
+                  <MapPin size={14} /> Google Maps
+                </button>
+                <button
+                  onClick={() => openWaze(center)}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px',
+                    padding: '8px',
+                    background: '#33ccff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '500'
+                  }}
+                >
+                  <Navigation size={14} /> Waze
+                </button>
+              </div>
+            )}
+            
+            {/* Original Action Buttons Design */}
             <div style={{ marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button
-                onClick={() => {
-                  setEditingCenter(center);
-                  setFormData(center);
-                  setShowModal(true);
-                }}
+                onClick={() => openModal(center)}
                 className="admin-action-icon edit"
                 title="Edit"
               >
@@ -164,6 +279,17 @@ const CentersManagement = () => {
           </div>
         ))}
       </div>
+
+      {centers.length === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: '60px',
+          background: '#f8f9fa',
+          borderRadius: '8px'
+        }}>
+          <p>No evacuation centers found. Click "Add New Center" to create one.</p>
+        </div>
+      )}
 
       {showModal && (
         <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>

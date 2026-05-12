@@ -1,6 +1,5 @@
-// src/components/auth/Register.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../supabaseClient';
 import PWDRegistration from './PWDRegistration';
 
 const Register = ({ setView }) => {
@@ -23,8 +22,14 @@ const Register = ({ setView }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
-  const { register } = useAuth(); // Use AuthContext
+
+  // Import logo from assets
+  let logoSrc;
+  try {
+    logoSrc = new URL('../../assets/logo.png', import.meta.url).href;
+  } catch (error) {
+    logoSrc = null;
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -75,34 +80,102 @@ const Register = ({ setView }) => {
     try {
       console.log('Starting registration for:', formData.email);
       
-      // Prepare user data for registration
-      const userData = {
+      // STEP 1: Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+            role: formData.isPWD ? 'pwd' : 'resident'
+          }
+        }
+      });
+
+      if (authError) {
+        console.error('Auth error:', authError);
+        if (authError.message.includes('User already registered')) {
+          throw new Error('Email already registered. Please login instead.');
+        } else {
+          throw new Error(authError.message);
+        }
+      }
+
+      if (!authData?.user) {
+        throw new Error('No user data returned from authentication');
+      }
+
+      console.log('Auth user created:', authData.user.id);
+
+      // STEP 2: Insert into users table
+      const userData = {
+        auth_id: authData.user.id,
+        email: formData.email,
         full_name: formData.fullName,
         contact_number: formData.contactNumber,
         address: formData.address,
         role: formData.isPWD ? 'pwd' : 'resident',
-        isPWD: formData.isPWD,
-        disabilityType: formData.disabilityType,
-        mobilityLevel: formData.mobilityLevel,
-        needsMedicalDevice: formData.needsMedicalDevice,
-        deviceDetails: formData.deviceDetails,
-        emergencyContactName: formData.emergencyContactName,
-        emergencyContactNumber: formData.emergencyContactNumber
+        created_at: new Date().toISOString()
       };
-      
-      // Use register function from AuthContext
-      const result = await register(userData);
-      
-      if (!result.success) {
-        throw new Error(result.error);
+
+      if (formData.isPWD && formData.disabilityType) {
+        userData.disability_type = formData.disabilityType;
       }
-      
+
+      console.log('Inserting user data:', userData);
+
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert([userData]);
+
+      if (insertError) {
+        console.error('Insert error:', insertError);
+      }
+
+      // STEP 3: Get user_id for PWD registration
+      const { data: userRecord, error: fetchError } = await supabase
+        .from('users')
+        .select('user_id')
+        .eq('auth_id', authData.user.id)
+        .maybeSingle();
+
+      // STEP 4: Insert PWD record if applicable
+      if (formData.isPWD && formData.disabilityType && userRecord) {
+        const pwdData = {
+          user_id: userRecord.user_id,
+          disability_category: formData.disabilityType,
+          mobility_level: formData.mobilityLevel || 'Independent',
+          needs_medical_device: formData.needsMedicalDevice || false,
+          auth_id: authData.user.id,
+          created_at: new Date().toISOString()
+        };
+
+        if (formData.deviceDetails) {
+          pwdData.device_details = formData.deviceDetails;
+        }
+        if (formData.emergencyContactName) {
+          pwdData.emergency_contact_name = formData.emergencyContactName;
+        }
+        if (formData.emergencyContactNumber) {
+          pwdData.emergency_contact_number = formData.emergencyContactNumber;
+        }
+
+        console.log('Inserting PWD data:', pwdData);
+
+        const { error: pwdError } = await supabase
+          .from('pwd_registry')
+          .insert([pwdData]);
+
+        if (pwdError) {
+          console.warn('PWD registration warning:', pwdError.message);
+        } else {
+          console.log('PWD registration successful');
+        }
+      }
+
       setSuccess('✅ Registration Successful! You can now login.');
       setFormData(initialState);
       
-      // Auto redirect to login after 2 seconds
       setTimeout(() => {
         setView('login');
       }, 2000);
@@ -117,9 +190,25 @@ const Register = ({ setView }) => {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <h1 className="brand">Alapan Ready</h1>
-        <h2>Resident Registration</h2>
+      <div className="auth-card register-card">
+        {/* Logo - maliit na gap */}
+        <div className="auth-logo-container" style={{ marginBottom: '10px' }}>
+          {logoSrc ? (
+            <img src={logoSrc} alt="Alapan Ready Logo" className="auth-logo" style={{ height: '60px' }} />
+          ) : (
+            <div style={{ fontSize: '2.5rem', textAlign: 'center' }}>🏥</div>
+          )}
+        </div>
+        
+<h2 style={{ 
+  fontSize: '1.3rem', 
+  marginBottom: '20px', 
+  textAlign: 'center',
+  color: 'var(--dark)',
+  fontWeight: 'bold'
+}}>
+  Resident Registration
+</h2>
         
         {error && (
           <div className="error-message" style={{
@@ -236,7 +325,9 @@ const Register = ({ setView }) => {
           </button>
         </form>
         
-        <p>May account na? <span className="link" onClick={() => !loading && setView('login')}>Login Here</span></p>
+        <p style={{ marginTop: '20px', textAlign: 'center' }}>
+          May account na? <span className="link" onClick={() => !loading && setView('login')}>Login Here</span>
+        </p>
         <button 
           className="btn-guest-outline" 
           onClick={() => !loading && setView('guest')}

@@ -1,30 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../supabaseClient';
 
-const PWDManagement = () => {
+const PWDManagement = ({ refreshTrigger }) => {
   const [pwdList, setPwdList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchPWDList();
-  }, []);
-
-  const fetchPWDList = async () => {
+  const fetchPWDList = useCallback(async () => {
     try {
       setLoading(true);
+      
       const { data, error } = await supabase
         .from('pwd_registry')
-        .select('*, users(full_name, email)')
+        .select(`
+          *,
+          users:user_id (
+            user_id,
+            full_name,
+            email,
+            contact_number
+          )
+        `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
       setPwdList(data || []);
+      
     } catch (error) {
       console.error('Error fetching PWD list:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchPWDList();
+  }, [fetchPWDList, refreshTrigger]);
+
+  // Auto-refresh when tab becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchPWDList();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchPWDList]);
 
   if (loading) {
     return (
@@ -47,6 +71,7 @@ const PWDManagement = () => {
             <tr>
               <th>Name</th>
               <th>Email</th>
+              <th>Contact</th>
               <th>Disability Category</th>
               <th>Mobility Level</th>
               <th>Medical Device</th>
@@ -58,6 +83,7 @@ const PWDManagement = () => {
               <tr key={pwd.pwd_id}>
                 <td>{pwd.users?.full_name || 'N/A'}</td>
                 <td>{pwd.users?.email || 'N/A'}</td>
+                <td>{pwd.users?.contact_number || 'N/A'}</td>
                 <td>{pwd.disability_category || 'N/A'}</td>
                 <td>{pwd.mobility_level || 'N/A'}</td>
                 <td>{pwd.needs_medical_device ? 'Yes' : 'No'}</td>

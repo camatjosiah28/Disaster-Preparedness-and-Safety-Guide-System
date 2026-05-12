@@ -19,24 +19,24 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
       marginBottom: '15px',
       textAlign: 'left'
     }}>
-      <h4 style={{ marginTop: 0, marginBottom: '15px', color: '#333' }}>PWD Information</h4>
+      <h4 style={{ marginTop: 0, marginBottom: '15px', color: '#333' }}>♿ PWD Information</h4>
       
       <select
         name="disabilityType"
         value={formData.disabilityType}
         onChange={handleChange}
         disabled={loading}
-        required
+        required={formData.isPWD}
         className="auth-input"
         style={{ marginBottom: '10px' }}
       >
         <option value="">Select Disability Type *</option>
-        <option value="Physical">Physical Disability</option>
-        <option value="Visual">Visual Impairment</option>
-        <option value="Hearing">Hearing Impairment</option>
-        <option value="Intellectual">Intellectual Disability</option>
-        <option value="Psychosocial">Psychosocial Disability</option>
-        <option value="Multiple">Multiple Disabilities</option>
+        <option value="Physical Disability">Physical Disability</option>
+        <option value="Visual Impairment">Visual Impairment</option>
+        <option value="Hearing Impairment">Hearing Impairment</option>
+        <option value="Intellectual Disability">Intellectual Disability</option>
+        <option value="Psychosocial Disability">Psychosocial Disability</option>
+        <option value="Multiple Disabilities">Multiple Disabilities</option>
       </select>
 
       <select
@@ -62,7 +62,7 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
         <input
           type="checkbox"
           name="needsMedicalDevice"
-          checked={formData.needsMedicalDevice}
+          checked={formData.needsMedicalDevice || false}
           onChange={handleCheckbox || handleChange}
           disabled={loading}
         />
@@ -73,8 +73,8 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
         <input
           name="deviceDetails"
           type="text"
-          placeholder="Device Details"
-          value={formData.deviceDetails}
+          placeholder="Device Details (e.g., Wheelchair, Oxygen tank, etc.)"
+          value={formData.deviceDetails || ''}
           onChange={handleChange}
           disabled={loading}
           className="auth-input"
@@ -85,8 +85,8 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
       <input
         name="emergencyContactName"
         type="text"
-        placeholder="Emergency Contact Name"
-        value={formData.emergencyContactName}
+        placeholder="Emergency Contact Person Name"
+        value={formData.emergencyContactName || ''}
         onChange={handleChange}
         disabled={loading}
         className="auth-input"
@@ -95,14 +95,18 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
 
       <input
         name="emergencyContactNumber"
-        type="text"
+        type="tel"
         placeholder="Emergency Contact Number"
-        value={formData.emergencyContactNumber}
+        value={formData.emergencyContactNumber || ''}
         onChange={handleChange}
         disabled={loading}
         className="auth-input"
         style={{ marginBottom: '5px' }}
       />
+      
+      <small style={{ color: '#666', display: 'block', marginTop: '10px' }}>
+        ⚠️ This information will help first responders assist you better during emergencies.
+      </small>
     </div>
   );
 };

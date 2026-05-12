@@ -116,6 +116,22 @@ body {
   align-items: center;
   gap: 15px;
 }
+/* Login Page Logo Styles */
+.auth-logo-container {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.auth-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.auth-logo:hover {
+  transform: scale(1.05);
+}
 
 .user-greeting {
   color: var(--white);

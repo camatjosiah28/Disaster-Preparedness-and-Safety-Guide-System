@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Shield, User } from 'lucide-react';
+import { supabase } from '../../supabaseClient';
 
 const Login = ({ setView }) => {
   const [email, setEmail] = useState('');
@@ -11,7 +12,15 @@ const Login = ({ setView }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [loginType, setLoginType] = useState('user');
   
-  const { login } = useAuth(); // Use AuthContext instead of direct supabase
+  const { login } = useAuth();
+
+  // Import logo from assets
+  let logoSrc;
+  try {
+    logoSrc = new URL('../../assets/logo.png', import.meta.url).href;
+  } catch (error) {
+    logoSrc = null;
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -29,7 +38,36 @@ const Login = ({ setView }) => {
     console.log('🔵 Login attempt as:', loginType, email);
     
     try {
-      // Use the login function from AuthContext
+      // FIRST: Check user role from database BEFORE login
+      console.log('📋 Checking user role first...');
+      const { data: userData, error: fetchError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('email', email)
+        .maybeSingle();
+      
+      if (fetchError) {
+        console.error('Error fetching user role:', fetchError);
+      }
+      
+      const userRole = userData?.role || 'resident';
+      console.log('👤 User role from DB:', userRole);
+      
+      // CHECK 1: If trying to login as RESIDENT but user is ADMIN
+      if (loginType === 'user' && userRole === 'admin') {
+        setError('❌ Admin accounts cannot login as Resident. Please use the Admin Portal tab.');
+        setIsLoading(false);
+        return;
+      }
+      
+      // CHECK 2: If trying to login as ADMIN but user is not ADMIN
+      if (loginType === 'admin' && userRole !== 'admin') {
+        setError('❌ This account is not an admin. Please use Resident Portal tab.');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Proceed with login
       const result = await login(email, password);
       
       if (!result.success) {
@@ -38,41 +76,16 @@ const Login = ({ setView }) => {
       
       console.log('✅ Login successful');
       
-      // After login, get the user role from the context's userProfile
-      // Need to wait a bit for context to update
-      setTimeout(async () => {
-        // Import supabase dynamically to check role
-        const { supabase } = await import('../../supabaseClient');
-        const { data: userData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('email', email)
-          .maybeSingle();
-        
-        const userRole = userData?.role || 'resident';
-        console.log('User role:', userRole);
-        
-        // If trying to login as admin but not admin role
-        if (loginType === 'admin' && userRole !== 'admin') {
-          // Sign out immediately
-          const { supabase } = await import('../../supabaseClient');
-          await supabase.auth.signOut();
-          setError('You are not authorized as admin. Please login as resident.');
-          setIsLoading(false);
-          return;
+      setSuccessMessage('Login successful! Redirecting...');
+      
+      // Redirect based on role
+      setTimeout(() => {
+        if (userRole === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/';
         }
-        
-        setSuccessMessage('Login successful! Redirecting...');
-        
-        // Redirect based on role
-        setTimeout(() => {
-          if (userRole === 'admin') {
-            window.location.href = '/admin';
-          } else {
-            window.location.href = '/';
-          }
-        }, 1500);
-      }, 500);
+      }, 1500);
       
     } catch (error) {
       console.error('Login error:', error);
@@ -84,7 +97,14 @@ const Login = ({ setView }) => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="brand">Alapan Ready</h1>
+        {/* Logo instead of text */}
+        <div className="auth-logo-container">
+          {logoSrc ? (
+            <img src={logoSrc} alt="Alapan Ready Logo" className="auth-logo" />
+          ) : (
+            <Shield size={60} color="var(--danger)" />
+          )}
+        </div>
         
         {/* Login Type Toggle */}
         <div style={{ 
@@ -141,7 +161,7 @@ const Login = ({ setView }) => {
           </button>
         </div>
         
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '20px', color: 'var(--dark)' }}>
           {loginType === 'admin' ? 'Admin Portal' : 'Resident Portal'}
         </h2>
         
