@@ -22,3 +22,4 @@ Thumbs.db
 # Build output (kung gagamit ka ng Vite o React sa future)
 dist/
 build/
+.vercel

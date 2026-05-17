@@ -2,9 +2,35 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { supabase } from '../../supabaseClient';
-import { getCenterIcon, getDirections } from '../../utils/mapIcons';
 import MapLegend from './MapLegend';
 import 'leaflet/dist/leaflet.css';
+
+// IMPORTANT: Fix para sa Leaflet markers sa production
+// Ito ang pumipigil sa "c is not a function" error
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Custom function para sa center icons (hindi na gagamit ng external mapIcons)
+const getCenterIcon = (centerName) => {
+  const name = centerName.toLowerCase();
+  let iconHtml = '🛡️';
+  
+  if (name.includes('school')) iconHtml = '🏫';
+  else if (name.includes('barangay')) iconHtml = '🏛️';
+  else if (name.includes('sports')) iconHtml = '🏟️';
+  
+  return L.divIcon({
+    html: `<div style="font-size: 24px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));">${iconHtml}</div>`,
+    className: 'custom-div-icon',
+    iconSize: [30, 30],
+    popupAnchor: [0, -15]
+  });
+};
 
 const EvacuationMap = ({ refreshTrigger }) => {
   const [centers, setCenters] = useState([]);
@@ -129,31 +155,33 @@ const EvacuationMap = ({ refreshTrigger }) => {
           <MapLegend />
           
           {centers.map(center => (
-            <Marker 
-              key={center.center_id}
-              position={[center.latitude, center.longitude]}
-              icon={getCenterIcon(center.center_name)}
-            >
-              <Popup>
-                <div className="evac-popup">
-                  <h3>{center.center_name}</h3>
-                  <p className="address">{center.address}</p>
-                  <p><strong>📞 Contact:</strong> {center.contact_number || 'N/A'}</p>
-                  <p><strong>👥 Capacity:</strong> {center.capacity} persons</p>
-                  <p><strong>📊 Status:</strong> <span className={`status-${center.status.toLowerCase()}`}>{center.status}</span></p>
-                  
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-                    <button 
-                      className="directions-btn"
-                      onClick={() => getDrivingDirections(center)}
-                      style={{ flex: 1 }}
-                    >
-                      🚗 Get Directions
-                    </button>
+            center.latitude && center.longitude && (
+              <Marker 
+                key={center.center_id}
+                position={[center.latitude, center.longitude]}
+                icon={getCenterIcon(center.center_name)}
+              >
+                <Popup>
+                  <div className="evac-popup">
+                    <h3>{center.center_name}</h3>
+                    <p className="address">{center.address}</p>
+                    <p><strong>📞 Contact:</strong> {center.contact_number || 'N/A'}</p>
+                    <p><strong>👥 Capacity:</strong> {center.capacity} persons</p>
+                    <p><strong>📊 Status:</strong> <span className={`status-${center.status?.toLowerCase() || 'open'}`}>{center.status || 'Open'}</span></p>
+                    
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                      <button 
+                        className="directions-btn"
+                        onClick={() => getDrivingDirections(center)}
+                        style={{ flex: 1 }}
+                      >
+                        🚗 Get Directions
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </Popup>
-            </Marker>
+                </Popup>
+              </Marker>
+            )
           ))}
         </MapContainer>
       </div>
@@ -165,11 +193,11 @@ const EvacuationMap = ({ refreshTrigger }) => {
             <div key={center.center_id} className="center-card">
               <div className="center-header">
                 <span className="center-icon">
-                  {center.center_name.toLowerCase().includes('school') ? '🏫' : 
-                   center.center_name.toLowerCase().includes('barangay') ? '🏛️' : 
-                   center.center_name.toLowerCase().includes('sports') ? '🏟️' : '🛡️'}
+                  {center.center_name?.toLowerCase().includes('school') ? '🏫' : 
+                   center.center_name?.toLowerCase().includes('barangay') ? '🏛️' : 
+                   center.center_name?.toLowerCase().includes('sports') ? '🏟️' : '🛡️'}
                 </span>
-                <span className={`status-badge ${center.status.toLowerCase()}`}>{center.status}</span>
+                <span className={`status-badge ${center.status?.toLowerCase() || 'open'}`}>{center.status || 'Open'}</span>
               </div>
               <h4>{center.center_name}</h4>
               <p className="center-address">{center.address}</p>
