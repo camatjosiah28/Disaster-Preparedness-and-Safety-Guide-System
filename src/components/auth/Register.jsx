@@ -9,6 +9,7 @@ const Register = ({ setView }) => {
     password: '',
     contactNumber: '',
     address: '',
+    street: '',
     isPWD: false,
     disabilityType: '',
     mobilityLevel: 'Independent',
@@ -22,6 +23,13 @@ const Register = ({ setView }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // List of barangays - Alapan 1 lang
+  const barangays = [
+    { value: 'Alapan 1-A', label: 'Alapan 1-A' },
+    { value: 'Alapan 1-B', label: 'Alapan 1-B' },
+    { value: 'Alapan 1-C', label: 'Alapan 1-C' }
+  ];
 
   // Import logo from assets
   let logoSrc;
@@ -41,9 +49,9 @@ const Register = ({ setView }) => {
   };
 
   const validateForm = () => {
-    const { fullName, email, password, contactNumber, address, isPWD, disabilityType } = formData;
+    const { fullName, email, password, contactNumber, address, street, isPWD, disabilityType } = formData;
     
-    if (!fullName || !email || !password || !address || !contactNumber) {
+    if (!fullName || !email || !password || !contactNumber || !address || !street) {
       setError('Please fill in all required fields');
       return false;
     }
@@ -67,6 +75,13 @@ const Register = ({ setView }) => {
     return true;
   };
 
+  // Combine address and street for full address
+  const getFullAddress = () => {
+    const barangay = barangays.find(b => b.value === formData.address);
+    const barangayName = barangay ? barangay.label : formData.address;
+    return `${formData.street}, ${barangayName}, Imus Cavite`;
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     
@@ -78,7 +93,8 @@ const Register = ({ setView }) => {
     setLoading(true);
 
     try {
-      console.log('Starting registration for:', formData.email);
+      const fullAddress = getFullAddress();
+      console.log('Full address:', fullAddress);
       
       // STEP 1: Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -87,7 +103,8 @@ const Register = ({ setView }) => {
         options: {
           data: {
             full_name: formData.fullName,
-            role: formData.isPWD ? 'pwd' : 'resident'
+            role: formData.isPWD ? 'pwd' : 'resident',
+            address: fullAddress
           }
         }
       });
@@ -113,7 +130,7 @@ const Register = ({ setView }) => {
         email: formData.email,
         full_name: formData.fullName,
         contact_number: formData.contactNumber,
-        address: formData.address,
+        address: fullAddress,
         role: formData.isPWD ? 'pwd' : 'resident',
         created_at: new Date().toISOString()
       };
@@ -191,7 +208,7 @@ const Register = ({ setView }) => {
   return (
     <div className="auth-page">
       <div className="auth-card register-card">
-        {/* Logo - maliit na gap */}
+        {/* Logo */}
         <div className="auth-logo-container" style={{ marginBottom: '10px' }}>
           {logoSrc ? (
             <img src={logoSrc} alt="Alapan Ready Logo" className="auth-logo" style={{ height: '60px' }} />
@@ -200,15 +217,15 @@ const Register = ({ setView }) => {
           )}
         </div>
         
-<h2 style={{ 
-  fontSize: '1.3rem', 
-  marginBottom: '20px', 
-  textAlign: 'center',
-  color: 'var(--dark)',
-  fontWeight: 'bold'
-}}>
-  Resident Registration
-</h2>
+        <h2 style={{ 
+          fontSize: '1.3rem', 
+          marginBottom: '20px', 
+          textAlign: 'center',
+          color: 'var(--dark)',
+          fontWeight: 'bold'
+        }}>
+          Resident Registration
+        </h2>
         
         {error && (
           <div className="error-message" style={{
@@ -277,16 +294,39 @@ const Register = ({ setView }) => {
             disabled={loading}
             required
           />
+          
+          {/* Street/Block/Lot Field */}
           <input 
-            name="address"
+            name="street"
             type="text" 
-            placeholder="Address *" 
+            placeholder="Street/Block/Lot No. * (e.g., Phase 1 Block 5 Lot 12)" 
             className="auth-input" 
-            value={formData.address}
+            value={formData.street}
             onChange={handleChange}
             disabled={loading}
             required
           />
+          
+          {/* Barangay Dropdown - Alapan 1 only */}
+          <select
+            name="address"
+            className="auth-input"
+            value={formData.address}
+            onChange={handleChange}
+            disabled={loading}
+            required
+            style={{ 
+              appearance: 'menulist',
+              backgroundImage: 'none'
+            }}
+          >
+            <option value="">Select Barangay *</option>
+            {barangays.map((barangay) => (
+              <option key={barangay.value} value={barangay.value}>
+                {barangay.label}
+              </option>
+            ))}
+          </select>
           
           <div style={{ 
             margin: '15px 0', 

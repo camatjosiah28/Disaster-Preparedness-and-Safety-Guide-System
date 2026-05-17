@@ -66,6 +66,52 @@ const EvacuationMap = ({ refreshTrigger }) => {
     };
   }, [fetchCenters]);
 
+  // Function to open Google Maps
+  const openGoogleMaps = (center) => {
+    if (center.latitude && center.longitude) {
+      window.open(`https://www.google.com/maps?q=${center.latitude},${center.longitude}`, '_blank');
+    } else if (center.address) {
+      const encodedAddress = encodeURIComponent(center.address);
+      window.open(`https://www.google.com/maps/search/${encodedAddress}`, '_blank');
+    } else {
+      alert('No location data available for this center.');
+    }
+  };
+
+  // Function to open Waze
+  const openWaze = (center) => {
+    if (center.latitude && center.longitude) {
+      window.open(`https://www.waze.com/ul?ll=${center.latitude},${center.longitude}&navigate=yes`, '_blank');
+    } else if (center.address) {
+      const encodedAddress = encodeURIComponent(center.address);
+      window.open(`https://www.waze.com/ul?q=${encodedAddress}&navigate=yes`, '_blank');
+    } else {
+      alert('No location data available for this center.');
+    }
+  };
+
+  // Function to get driving directions from current location
+  const getDrivingDirections = (center) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          if (center.latitude && center.longitude) {
+            window.open(`https://www.google.com/maps/dir/${latitude},${longitude}/${center.latitude},${center.longitude}`, '_blank');
+          } else {
+            openGoogleMaps(center);
+          }
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          openGoogleMaps(center);
+        }
+      );
+    } else {
+      openGoogleMaps(center);
+    }
+  };
+
   if (loading && centers.length === 0) {
     return <div className="loading-map">Loading evacuation centers...</div>;
   }
@@ -96,12 +142,15 @@ const EvacuationMap = ({ refreshTrigger }) => {
                   <p><strong>👥 Capacity:</strong> {center.capacity} persons</p>
                   <p><strong>📊 Status:</strong> <span className={`status-${center.status.toLowerCase()}`}>{center.status}</span></p>
                   
-                  <button 
-                    className="directions-btn"
-                    onClick={() => getDirections(center.latitude, center.longitude)}
-                  >
-                    🗺️ Get Directions
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                    <button 
+                      className="directions-btn"
+                      onClick={() => getDrivingDirections(center)}
+                      style={{ flex: 1 }}
+                    >
+                      🚗 Get Directions
+                    </button>
+                  </div>
                 </div>
               </Popup>
             </Marker>
@@ -125,6 +174,88 @@ const EvacuationMap = ({ refreshTrigger }) => {
               <h4>{center.center_name}</h4>
               <p className="center-address">{center.address}</p>
               <p className="center-capacity">👥 {center.capacity} persons</p>
+              
+              {/* Google Maps and Waze Buttons */}
+              <div style={{ 
+                marginTop: '15px', 
+                display: 'flex', 
+                gap: '10px',
+                paddingTop: '10px',
+                borderTop: '1px solid #e9ecef'
+              }}>
+                <button
+                  onClick={() => openGoogleMaps(center)}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '8px 12px',
+                    background: '#4285f4',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#3367d6'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#4285f4'}
+                >
+                  🗺️ Google Maps
+                </button>
+                <button
+                  onClick={() => openWaze(center)}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '8px 12px',
+                    background: '#33ccff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#00b8e6'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#33ccff'}
+                >
+                  🧭 Waze
+                </button>
+              </div>
+
+              {/* Directions from current location button */}
+              <button
+                onClick={() => getDrivingDirections(center)}
+                style={{
+                  width: '100%',
+                  marginTop: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  padding: '8px 12px',
+                  background: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#218838'}
+                onMouseLeave={(e) => e.currentTarget.style.background = '#28a745'}
+              >
+                🚗 Get Directions from My Location
+              </button>
             </div>
           ))}
         </div>
