@@ -4,6 +4,7 @@ import { supabase } from '../../supabaseClient';
 const ContactsList = ({ refreshTrigger }) => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageErrors, setImageErrors] = useState({});
 
   const fetchContacts = useCallback(async () => {
     setLoading(true);
@@ -15,7 +16,12 @@ const ContactsList = ({ refreshTrigger }) => {
     if (error) {
       console.error('Error fetching contacts:', error);
     } else if (data) {
-      setContacts(data);
+      // Filter out Imus City Rescue (kung meron)
+      const filteredData = data.filter(contact => 
+        !contact.agency_name.toLowerCase().includes('imus city rescue') &&
+        !contact.agency_name.toLowerCase().includes('rescue')
+      );
+      setContacts(filteredData);
     }
     setLoading(false);
   }, []);
@@ -38,22 +44,114 @@ const ContactsList = ({ refreshTrigger }) => {
     };
   }, [fetchContacts]);
 
+  // Get logo path based on agency
+  const getLogoPath = (agencyName) => {
+    const name = agencyName.toLowerCase();
+    
+    // Barangay Alapan Logos (may space sa filename)
+    if (name.includes('alapan 1-a') || name.includes('alapan 1a')) {
+      return '/logos/alapan 1-a.png';
+    }
+    if (name.includes('alapan 1-b') || name.includes('alapan 1b')) {
+      return '/logos/alapan 1-b.png';
+    }
+    if (name.includes('alapan 1-c') || name.includes('alapan 1c')) {
+      return '/logos/alapan 1-c.png';
+    }
+    
+    // City-wide Emergency Logos
+    if (name.includes('fire') || name.includes('bfp') || name.includes('bureau of fire')) {
+      return '/logos/bfp-logo.png';
+    }
+    if (name.includes('police') || name.includes('pnp') || name.includes('station')) {
+      return '/logos/pnp-logo.png';
+    }
+    if (name.includes('disaster') || name.includes('cdrrmo') || name.includes('drrm') || name.includes('risk reduction')) {
+      return '/logos/cdrrmo-logo.png';
+    }
+    if (name.includes('911') || name.includes('national emergency') || name.includes('national hotline')) {
+      return '/logos/911-logo.png';
+    }
+    
+    return null;
+  };
+
+  // Fallback icon if no logo
+  const getFallbackIcon = (agencyName) => {
+    const name = agencyName.toLowerCase();
+    if (name.includes('alapan')) return '🏘️';
+    if (name.includes('fire')) return '🔥';
+    if (name.includes('police')) return '👮‍♂️';
+    if (name.includes('disaster')) return '🛡️';
+    if (name.includes('911')) return '📞';
+    return '📞';
+  };
+
+  const handleImageError = (contactId) => {
+    setImageErrors(prev => ({ ...prev, [contactId]: true }));
+  };
+
+  // Handle click to call function
+  const handleCall = (phoneNumber, agencyName) => {
+    const cleanNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
+    const telNumber = cleanNumber === '911' ? '911' : cleanNumber;
+    window.location.href = `tel:${telNumber}`;
+    console.log(`Calling ${agencyName}: ${telNumber}`);
+  };
+
   if (loading && contacts.length === 0) {
-    return <div>Loading contacts...</div>;
+    return (
+      <div className="loading-contacts">
+        <div className="spinner"></div>
+        <p>Loading emergency contacts...</p>
+      </div>
+    );
   }
 
   if (contacts.length === 0) {
-    return <p>No emergency contacts available.</p>;
+    return <p className="no-data">No emergency contacts available.</p>;
   }
 
   return (
-    <div className="contacts-list">
-      {contacts.map(contact => (
-        <div key={contact.contact_id} className="contact-item">
-          <strong>{contact.agency_name}:</strong> {contact.contact_number}
-          {contact.description && <small> - {contact.description}</small>}
-        </div>
-      ))}
+    <div className="contacts-container">
+      <div className="contacts-grid">
+        {contacts.map(contact => {
+          const logoPath = getLogoPath(contact.agency_name);
+          const showFallback = imageErrors[contact.contact_id] || !logoPath;
+          
+          return (
+            <div key={contact.contact_id} className="contact-card">
+              <div className="contact-icon-wrapper">
+                {!showFallback ? (
+                  <img 
+                    src={logoPath}
+                    alt={`${contact.agency_name} logo`}
+                    className="official-logo"
+                    onError={() => handleImageError(contact.contact_id)}
+                  />
+                ) : (
+                  <span className="fallback-icon">
+                    {contact.icon || getFallbackIcon(contact.agency_name)}
+                  </span>
+                )}
+              </div>
+              <div className="contact-info">
+                <h4>{contact.agency_name}</h4>
+                <p className="contact-number">{contact.contact_number}</p>
+                {contact.description && (
+                  <p className="contact-description">{contact.description}</p>
+                )}
+                <button 
+                  className="call-button"
+                  onClick={() => handleCall(contact.contact_number, contact.agency_name)}
+                >
+                  Tumawag
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

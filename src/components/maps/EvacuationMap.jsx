@@ -1,5 +1,18 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
 import { supabase } from '../../supabaseClient';
+import 'leaflet/dist/leaflet.css';
+
+// IMPORTANT: Fix para sa Leaflet markers sa production
+// Ito ang pumipigil sa "c is not a function" error
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
 
 const EvacuationMap = ({ refreshTrigger }) => {
   const [centers, setCenters] = useState([]);
@@ -32,8 +45,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
     } else if (center.address) {
       const encodedAddress = encodeURIComponent(center.address);
       window.open(`https://www.google.com/maps/search/${encodedAddress}`, '_blank');
-    } else {
-      alert('No location data available for this center.');
     }
   };
 
@@ -42,11 +53,48 @@ const EvacuationMap = ({ refreshTrigger }) => {
   }
 
   return (
-    <>
+    <div>
+      {/* Map Container */}
+      <div className="map-wrapper">
+        <MapContainer 
+          center={[14.4190, 120.9350]} 
+          zoom={14} 
+          style={{ height: '100%', width: '100%' }}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          
+          {centers.map((center) => (
+            center.latitude && center.longitude && (
+              <Marker 
+                key={center.center_id}
+                position={[center.latitude, center.longitude]}
+              >
+                <Popup>
+                  <div className="evac-popup">
+                    <h3>{center.center_name}</h3>
+                    <p className="address">{center.address}</p>
+                    <p><strong>📞 Contact:</strong> {center.contact_number || 'N/A'}</p>
+                    <p><strong>👥 Capacity:</strong> {center.capacity} persons</p>
+                    <p><strong>📊 Status:</strong> <span className={`status-${center.status?.toLowerCase() || 'open'}`}>{center.status || 'Open'}</span></p>
+                    <button 
+                      className="directions-btn"
+                      onClick={() => openGoogleMaps(center)}
+                    >
+                      🗺️ Get Directions
+                    </button>
+                  </div>
+                </Popup>
+              </Marker>
+            )
+          ))}
+        </MapContainer>
+      </div>
+
+      {/* List of Evacuation Centers */}
       <div className="centers-list">
         <h3>📋 List of Evacuation Centers</h3>
         <div className="centers-grid">
-          {centers.map(center => (
+          {centers.map((center) => (
             <div key={center.center_id} className="center-card">
               <div className="center-header">
                 <span className="center-icon">
@@ -62,33 +110,11 @@ const EvacuationMap = ({ refreshTrigger }) => {
               <p className="center-address">{center.address}</p>
               <p className="center-capacity">👥 {center.capacity} persons</p>
               {center.contact_number && (
-                <p style={{ margin: '5px 0', fontSize: '0.85rem', color: '#666' }}>
-                  📞 {center.contact_number}
-                </p>
+                <p className="center-contact">📞 {center.contact_number}</p>
               )}
-              
-              {/* Google Maps Button */}
               <button
                 onClick={() => openGoogleMaps(center)}
-                style={{
-                  width: '100%',
-                  marginTop: '15px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px',
-                  background: '#4285f4',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#3367d6'}
-                onMouseLeave={(e) => e.currentTarget.style.background = '#4285f4'}
+                className="google-maps-btn"
               >
                 🗺️ View on Google Maps
               </button>
@@ -96,24 +122,7 @@ const EvacuationMap = ({ refreshTrigger }) => {
           ))}
         </div>
       </div>
-
-      {/* Emergency Tips */}
-      <div style={{
-        marginTop: '30px',
-        padding: '20px',
-        background: '#fff3cd',
-        borderRadius: '12px',
-        border: '1px solid #ffecb5'
-      }}>
-        <h4 style={{ margin: '0 0 10px', color: '#856404' }}>🚨 Emergency Tips</h4>
-        <ul style={{ margin: 0, paddingLeft: '20px', color: '#856404' }}>
-          <li>Alamin ang pinakamalapit na evacuation center sa inyong lugar</li>
-          <li>I-save ang mga emergency hotlines sa iyong phone</li>
-          <li>Maghanda ng emergency bag na may first aid, tubig, at pagkain</li>
-          <li>Sundin ang mga anunsyo mula sa barangay at lokal na pamahalaan</li>
-        </ul>
-      </div>
-    </>
+    </div>
   );
 };
 

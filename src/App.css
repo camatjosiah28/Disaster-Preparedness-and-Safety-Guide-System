@@ -116,6 +116,7 @@ body {
   align-items: center;
   gap: 15px;
 }
+
 /* Login Page Logo Styles */
 .auth-logo-container {
   text-align: center;
@@ -553,12 +554,12 @@ select.auth-input {
 
 /* Map Wrapper */
 .map-wrapper {
-  height: 550px;
+  height: 500px;
   width: 100%;
   border-radius: var(--border-radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-md);
-  border: 2px solid var(--gray);
+  border: 1px solid var(--gray);
   margin-bottom: 30px;
   position: relative;
   z-index: 1;
@@ -651,8 +652,8 @@ select.auth-input {
 /* Popup Styles */
 .leaflet-popup-content {
   margin: 15px !important;
-  min-width: 280px;
-  max-width: 320px;
+  min-width: 250px;
+  max-width: 300px;
 }
 
 .evac-popup {
@@ -662,18 +663,17 @@ select.auth-input {
 .evac-popup h3 {
   margin: 0 0 12px 0;
   color: var(--danger);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   border-bottom: 2px solid var(--danger);
   padding-bottom: 8px;
-  padding-right: 5px;
 }
 
 .evac-popup .address {
   font-style: italic;
   color: var(--gray-dark);
   margin: 10px 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   line-height: 1.4;
   background: var(--light-gray);
   padding: 8px;
@@ -683,7 +683,7 @@ select.auth-input {
 .evac-popup p {
   margin: 8px 0;
   color: var(--dark);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -691,8 +691,8 @@ select.auth-input {
 
 .evac-popup p strong {
   color: var(--dark);
-  min-width: 70px;
-  font-size: 0.9rem;
+  min-width: 65px;
+  font-size: 0.85rem;
 }
 
 .status-open {
@@ -706,8 +706,8 @@ select.auth-input {
 
 .directions-btn {
   width: 100%;
-  padding: 12px;
-  background: var(--danger);
+  padding: 10px;
+  background: #4285f4;
   color: white;
   border: none;
   border-radius: var(--border-radius-md);
@@ -715,7 +715,7 @@ select.auth-input {
   font-weight: bold;
   margin-top: 15px;
   transition: var(--transition);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -723,13 +723,9 @@ select.auth-input {
 }
 
 .directions-btn:hover {
-  background: var(--danger-dark);
+  background: #3367d6;
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
-}
-
-.directions-btn:active {
-  transform: translateY(0);
 }
 
 /* Centers List */
@@ -767,7 +763,6 @@ select.auth-input {
   border-radius: var(--border-radius-lg);
   padding: 20px;
   box-shadow: var(--shadow-sm);
-  cursor: pointer;
   transition: var(--transition);
   border-left: 6px solid;
   position: relative;
@@ -848,6 +843,34 @@ select.auth-input {
   display: inline-flex;
 }
 
+.center-contact {
+  color: var(--gray-dark);
+  font-size: 0.85rem;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Google Maps Button sa Center Card */
+.google-maps-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.google-maps-btn:hover {
+  background: #3367d6;
+}
+
 .status-badge {
   position: absolute;
   top: 15px;
@@ -878,124 +901,150 @@ select.auth-input {
   border: 1px solid var(--accent);
 }
 
+/* Loading Map */
+.loading-map {
+  text-align: center;
+  padding: 60px;
+  font-size: 1.2rem;
+  color: var(--gray-dark);
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+}
+
+/* ========== EMERGENCY CONTACTS COMPONENT STYLES ========== */
+
+/* Container */
+.contacts-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 /* Contacts Grid */
 .contacts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
   margin-top: 20px;
 }
 
+/* Contact Card */
 .contact-card {
   background: var(--white);
-  padding: 20px;
-  border-radius: var(--border-radius-md);
+  border-radius: 12px;
+  padding: 25px 20px;
   text-align: center;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-  border: 1px solid var(--gray);
-}
-
-.contact-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-}
-
-.contact-icon {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.contact-card h4 {
-  color: var(--dark);
-  margin: 10px 0;
-  font-size: 1.1rem;
-}
-
-.contact-number {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--danger);
-  margin: 10px 0;
-}
-
-.contact-description {
-  color: var(--gray-dark);
-  font-size: 0.9rem;
-}
-
-/* Full Contacts Grid */
-.contacts-full-grid {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid #e8e8e8;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.contact-full-card {
-  background: var(--white);
-  padding: 20px;
-  border-radius: var(--border-radius-lg);
-  display: flex;
-  gap: 20px;
   align-items: center;
-  box-shadow: var(--shadow-md);
-  border-left: 5px solid var(--danger);
-  transition: var(--transition);
 }
 
-.contact-full-card:hover {
-  transform: translateX(5px);
-  box-shadow: var(--shadow-lg);
-}
-
-.contact-big-icon {
-  font-size: 3rem;
+/* Logo Wrapper */
+.contact-icon-wrapper {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, var(--danger), var(--danger-dark));
-  color: white;
+  background: #f5f5f5;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  margin-bottom: 15px;
 }
 
+/* Logo Image */
+.official-logo {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Fallback Icon */
+.fallback-icon {
+  font-size: 40px;
+}
+
+/* Contact Info */
 .contact-info {
-  flex: 1;
+  text-align: center;
+  width: 100%;
 }
 
-.contact-info h3 {
-  color: var(--dark);
-  margin-bottom: 5px;
+.contact-info h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.contact-number {
   font-size: 1.3rem;
-}
-
-.contact-big-number {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--danger);
-  margin: 5px 0;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.3px;
 }
 
-.call-btn {
-  padding: 8px 20px;
-  background: var(--green);
+.contact-description {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+}
+
+/* Call Button */
+.call-button {
+  background: var(--danger);
   color: white;
   border: none;
-  border-radius: var(--border-radius-sm);
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: bold;
-  margin-top: 10px;
-  transition: var(--transition);
+  transition: all 0.2s ease;
+  margin-top: 12px;
 }
 
-.call-btn:hover {
-  background: var(--green-dark);
+.call-button:hover {
+  background: var(--danger-dark);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 8px rgba(211, 47, 47, 0.3);
+}
+
+/* Loading Spinner */
+.loading-contacts {
+  text-align: center;
+  padding: 60px;
+  color: var(--gray-dark);
+}
+
+.spinner {
+  width: 45px;
+  height: 45px;
+  margin: 0 auto 15px;
+  border: 4px solid #f0f0f0;
+  border-top-color: var(--danger);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* No Data */
+.no-data {
+  text-align: center;
+  padding: 60px;
+  color: #aaa;
+  background: var(--white);
+  border-radius: 12px;
+  font-size: 1rem;
 }
 
 /* Guides Grid */
@@ -1205,27 +1254,12 @@ select.auth-input {
   margin-right: 10px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 /* Alert Types */
 .alert-weather { border-left-color: var(--blue); }
 .alert-flood { border-left-color: var(--blue); }
 .alert-earthquake { border-left-color: var(--accent); }
 .alert-fire { border-left-color: var(--danger); }
 .alert-evacuation { border-left-color: var(--green); }
-
-/* No Data */
-.no-data {
-  text-align: center;
-  padding: 40px;
-  color: var(--gray-dark);
-  font-size: 1.1rem;
-  background: var(--white);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-sm);
-}
 
 /* Animations */
 .animate-slide {
@@ -1324,26 +1358,21 @@ select.auth-input {
   }
 
   .leaflet-popup-content {
-    min-width: 240px;
-    max-width: 280px;
+    min-width: 220px;
+    max-width: 260px;
   }
 
   .evac-popup h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .evac-popup p {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .directions-btn {
-    padding: 10px;
-    font-size: 0.85rem;
-  }
-
-  .contact-full-card {
-    flex-direction: column;
-    text-align: center;
+    padding: 8px;
+    font-size: 0.8rem;
   }
 
   .profile-header {
@@ -1358,6 +1387,28 @@ select.auth-input {
 
   .profile-details p strong {
     min-width: auto;
+  }
+
+  /* Emergency Contacts Responsive */
+  .contacts-container {
+    padding: 15px;
+  }
+  
+  .contact-card {
+    padding: 20px 15px;
+  }
+  
+  .contact-icon-wrapper {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .contact-number {
+    font-size: 1.2rem;
+  }
+  
+  .contact-info h4 {
+    font-size: 1rem;
   }
 }
 
@@ -1421,15 +1472,53 @@ select.auth-input {
   }
 
   .center-icon {
-    font-size: 2.5rem;
-  }
-
-  .contacts-grid {
-    grid-template-columns: 1fr;
+    font-size: 2rem;
   }
 
   .guides-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Emergency Contacts Responsive */
+  .contacts-container {
+    padding: 10px;
+  }
+  
+  .contacts-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .contact-card {
+    padding: 16px 12px;
+  }
+  
+  .contact-icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .official-logo {
+    width: 70%;
+    height: 70%;
+  }
+  
+  .fallback-icon {
+    font-size: 32px;
+  }
+  
+  .contact-number {
+    font-size: 1.1rem;
+  }
+  
+  .contact-info h4 {
+    font-size: 0.95rem;
+  }
+  
+  .call-button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    width: 100%;
   }
 }
 
@@ -2265,4 +2354,4 @@ a:focus-visible {
     padding: 8px 10px;
     font-size: 0.8rem;
   }
-} 
+}
