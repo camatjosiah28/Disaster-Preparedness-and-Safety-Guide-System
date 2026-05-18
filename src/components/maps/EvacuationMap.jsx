@@ -63,6 +63,7 @@ const EvacuationMap = ({ refreshTrigger }) => {
         .order('center_name');
       
       if (error) throw error;
+      console.log('Fetched centers:', data); // Para ma-verify kung may plus_code
       setCenters(data || []);
     } catch (error) {
       console.error('Error fetching centers:', error);
@@ -75,16 +76,36 @@ const EvacuationMap = ({ refreshTrigger }) => {
     fetchCenters();
   }, [fetchCenters, refreshTrigger]);
 
+  // UPDATED: Open Google Maps gamit ang plus_code para exact location
   const openGoogleMaps = (center) => {
-    if (center.latitude && center.longitude) {
-      window.open(`https://www.google.com/maps?q=${center.latitude},${center.longitude}`, '_blank');
-    } else if (center.address) {
-      const encodedAddress = encodeURIComponent(center.address);
-      window.open(`https://www.google.com/maps/search/${encodedAddress}`, '_blank');
+    let searchQuery = '';
+    
+    // Priority: Gamitin ang plus_code mula sa database
+    if (center.plus_code) {
+      searchQuery = center.plus_code;
+      console.log('Opening with plus_code:', searchQuery);
+    } 
+    // Second: Gamitin ang address
+    else if (center.address) {
+      searchQuery = center.address;
+      console.log('Opening with address:', searchQuery);
     }
+    // Last resort: coordinates
+    else if (center.latitude && center.longitude) {
+      searchQuery = `${center.latitude},${center.longitude}`;
+      console.log('Opening with coordinates:', searchQuery);
+    }
+    // Default: center name
+    else {
+      searchQuery = center.center_name;
+      console.log('Opening with center name:', searchQuery);
+    }
+    
+    const encodedQuery = encodeURIComponent(searchQuery);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
   };
 
-  // Function to zoom to a specific center - NO SHAKING
+  // Function to zoom to a specific center
   const zoomToCenter = (center) => {
     setSelectedCenter(center);
   };
@@ -121,7 +142,7 @@ const EvacuationMap = ({ refreshTrigger }) => {
 
   return (
     <div>
-      {/* Map Container - NO key refresh para walang shake */}
+      {/* Map Container */}
       <div className="map-wrapper" style={{ height: '400px', marginBottom: '30px' }}>
         <MapContainer 
           center={[14.4190, 120.9350]} 
@@ -195,7 +216,7 @@ const EvacuationMap = ({ refreshTrigger }) => {
             )
           ))}
           
-          {/* Zoom controller - no re-render ng buong mapa */}
+          {/* Zoom controller */}
           {selectedCenter && (
             <ZoomController center={selectedCenter} mapRef={mapRef} />
           )}
@@ -267,6 +288,13 @@ const EvacuationMap = ({ refreshTrigger }) => {
                 <p className="center-contact" style={{ margin: '5px 0', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <MdPhone size={14} color="#2196f3" />
                   <span>{center.contact_number}</span>
+                </p>
+              )}
+              {/* Display plus_code kung meron para makita ng user */}
+              {center.plus_code && (
+                <p className="center-plus-code" style={{ margin: '5px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <MdLocationOn size={12} />
+                  <span>Plus Code: {center.plus_code}</span>
                 </p>
               )}
               <button

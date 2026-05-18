@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit, Trash2, Phone, Users, MapPin, Navigation } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
+// Import professional icons - same sa EvacuationMap
+import { MdPhone, MdGroup, MdLocationOn, MdDirections, MdSchool, MdBusiness, MdSportsCricket, MdShield, MdAdd, MdEdit, MdDelete } from 'react-icons/md';
+import { FaExternalLinkAlt, FaGoogle, FaWaze } from 'react-icons/fa';
 
 const CentersManagement = ({ refreshTrigger }) => {
   const [centers, setCenters] = useState([]);
@@ -14,7 +16,8 @@ const CentersManagement = ({ refreshTrigger }) => {
     longitude: '',
     capacity: '',
     contact_number: '',
-    status: 'Open'
+    status: 'Open',
+    plus_code: ''
   });
 
   const fetchCenters = useCallback(async () => {
@@ -38,15 +41,48 @@ const CentersManagement = ({ refreshTrigger }) => {
     fetchCenters();
   }, [fetchCenters, refreshTrigger]);
 
+  // Get icon based on center name - same sa EvacuationMap
+  const getCenterIcon = (centerName) => {
+    const name = centerName?.toLowerCase() || '';
+    
+    if (name.includes('school')) {
+      return <MdSchool size={28} color="#2196f3" />;
+    }
+    if (name.includes('barangay')) {
+      return <MdBusiness size={28} color="#4caf50" />;
+    }
+    if (name.includes('sports') || name.includes('gym')) {
+      return <MdSportsCricket size={28} color="#ff9800" />;
+    }
+    return <MdShield size={28} color="#f44336" />;
+  };
+
+  // Get status color - same sa EvacuationMap
+  const getStatusColor = (status) => {
+    switch(status?.toLowerCase()) {
+      case 'open': return '#4caf50';
+      case 'closed': return '#f44336';
+      case 'full': return '#ff9800';
+      default: return '#4caf50';
+    }
+  };
+
   const openGoogleMaps = (center) => {
-    if (center.latitude && center.longitude) {
-      window.open(`https://www.google.com/maps?q=${center.latitude},${center.longitude}`, '_blank');
+    let searchQuery = '';
+    
+    if (center.plus_code) {
+      searchQuery = center.plus_code;
+    } else if (center.latitude && center.longitude) {
+      searchQuery = `${center.latitude},${center.longitude}`;
     } else if (center.address) {
-      const encodedAddress = encodeURIComponent(center.address);
-      window.open(`https://www.google.com/maps/search/${encodedAddress}`, '_blank');
+      searchQuery = center.address;
     } else {
       alert('No location data available for this center.');
+      return;
     }
+    
+    const encodedQuery = encodeURIComponent(searchQuery);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
   };
 
   const openWaze = (center) => {
@@ -63,49 +99,38 @@ const CentersManagement = ({ refreshTrigger }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Prevent multiple submissions
     if (loading) return;
     
     try {
+      const centerData = {
+        center_name: formData.center_name,
+        address: formData.address,
+        latitude: formData.latitude || null,
+        longitude: formData.longitude || null,
+        capacity: formData.capacity ? parseInt(formData.capacity) : null,
+        contact_number: formData.contact_number || null,
+        status: formData.status,
+        plus_code: formData.plus_code || null
+      };
+
       if (editingCenter) {
-        // Update existing center
         const { error } = await supabase
           .from('evacuation_centers')
-          .update({
-            center_name: formData.center_name,
-            address: formData.address,
-            latitude: formData.latitude || null,
-            longitude: formData.longitude || null,
-            capacity: formData.capacity ? parseInt(formData.capacity) : null,
-            contact_number: formData.contact_number || null,
-            status: formData.status
-          })
+          .update(centerData)
           .eq('center_id', editingCenter.center_id);
         
         if (error) throw error;
         console.log('Center updated successfully');
       } else {
-        // Insert new center
         const { error } = await supabase
           .from('evacuation_centers')
-          .insert([{
-            center_name: formData.center_name,
-            address: formData.address,
-            latitude: formData.latitude || null,
-            longitude: formData.longitude || null,
-            capacity: formData.capacity ? parseInt(formData.capacity) : null,
-            contact_number: formData.contact_number || null,
-            status: formData.status
-          }]);
+          .insert([centerData]);
         
         if (error) throw error;
         console.log('Center created successfully');
       }
       
-      // Refresh the list
       await fetchCenters();
-      
-      // Close modal and reset form
       setShowModal(false);
       resetForm();
       
@@ -141,7 +166,8 @@ const CentersManagement = ({ refreshTrigger }) => {
       longitude: '',
       capacity: '',
       contact_number: '',
-      status: 'Open'
+      status: 'Open',
+      plus_code: ''
     });
   };
 
@@ -155,7 +181,8 @@ const CentersManagement = ({ refreshTrigger }) => {
         longitude: center.longitude || '',
         capacity: center.capacity || '',
         contact_number: center.contact_number || '',
-        status: center.status || 'Open'
+        status: center.status || 'Open',
+        plus_code: center.plus_code || ''
       });
     } else {
       resetForm();
@@ -183,32 +210,83 @@ const CentersManagement = ({ refreshTrigger }) => {
           className="admin-btn admin-btn-primary"
           style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
         >
-          <Plus size={18} /> Add New Center
+          <MdAdd size={18} /> Add New Center
         </button>
       </div>
 
-      <div className="centers-grid">
+      <div className="centers-grid" style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+        gap: '20px' 
+      }}>
         {centers.map((center) => (
-          <div key={center.center_id} className="center-card safe-center">
-            <div className="center-header">
-              <div className="center-icon">🏥</div>
-              <div className={`status-badge ${center.status === 'Open' ? 'open' : center.status === 'Full' ? 'full' : 'closed'}`}>
+          <div 
+            key={center.center_id} 
+            className="center-card safe-center"
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '18px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              transition: 'transform 0.2s'
+            }}
+          >
+            <div className="center-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div className="center-icon" style={{ 
+                width: '55px', 
+                height: '55px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '12px'
+              }}>
+                {getCenterIcon(center.center_name)}
+              </div>
+              <span 
+                className={`status-badge ${center.status === 'Open' ? 'open' : center.status === 'Full' ? 'full' : 'closed'}`}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  backgroundColor: getStatusColor(center.status),
+                  color: 'white'
+                }}
+              >
                 {center.status || 'Open'}
-              </div>
-            </div>
-            <h4>{center.center_name}</h4>
-            <div className="center-address">{center.address}</div>
-            {center.contact_number && (
-              <div style={{ margin: '10px 0', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Phone size={14} /> {center.contact_number}
-              </div>
-            )}
-            <div className="center-capacity">
-              <Users size={14} /> {center.current_occupancy || 0} / {center.capacity || 0} occupants
+              </span>
             </div>
             
+            <h4 style={{ margin: '10px 0 5px 0', fontSize: '1rem', fontWeight: 'bold' }}>{center.center_name}</h4>
+            
+            <div className="center-address" style={{ fontSize: '12px', color: '#666', display: 'flex', alignItems: 'flex-start', gap: '5px', marginBottom: '8px' }}>
+              <MdLocationOn size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span>{center.address}</span>
+            </div>
+            
+            {center.contact_number && (
+              <div style={{ margin: '8px 0', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <MdPhone size={14} color="#2196f3" />
+                <span>{center.contact_number}</span>
+              </div>
+            )}
+            
+            <div className="center-capacity" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', marginBottom: '8px' }}>
+              <MdGroup size={14} color="#4caf50" />
+              <span>{center.current_occupancy || 0} / {center.capacity || 0} occupants</span>
+            </div>
+            
+            {/* Display plus code if available */}
+            {center.plus_code && (
+              <div style={{ margin: '8px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <MdLocationOn size={12} />
+                <span>Plus Code: {center.plus_code}</span>
+              </div>
+            )}
+            
             {/* Map Buttons */}
-            {(center.latitude || center.address) && (
+            {(center.latitude || center.address || center.plus_code) && (
               <div style={{ 
                 marginTop: '15px', 
                 display: 'flex', 
@@ -223,18 +301,18 @@ const CentersManagement = ({ refreshTrigger }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '5px',
+                    gap: '6px',
                     padding: '8px',
                     background: '#4285f4',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     cursor: 'pointer',
                     fontSize: '12px',
                     fontWeight: '500'
                   }}
                 >
-                  <MapPin size={14} /> Google Maps
+                  <FaGoogle size={14} /> Google Maps
                 </button>
                 <button
                   onClick={() => openWaze(center)}
@@ -243,37 +321,57 @@ const CentersManagement = ({ refreshTrigger }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '5px',
+                    gap: '6px',
                     padding: '8px',
                     background: '#33ccff',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     cursor: 'pointer',
                     fontSize: '12px',
                     fontWeight: '500'
                   }}
                 >
-                  <Navigation size={14} /> Waze
+                  <FaWaze size={14} /> Waze
                 </button>
               </div>
             )}
             
-            {/* Original Action Buttons Design */}
+            {/* Action Buttons */}
             <div style={{ marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => openModal(center)}
-                className="admin-action-icon edit"
-                title="Edit"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '6px 12px',
+                  backgroundColor: '#2196f3',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '12px'
+                }}
               >
-                <Edit size={18} />
+                <MdEdit size={14} /> Edit
               </button>
               <button
                 onClick={() => handleDelete(center.center_id)}
-                className="admin-action-icon delete"
-                title="Delete"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '6px 12px',
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '12px'
+                }}
               >
-                <Trash2 size={18} />
+                <MdDelete size={14} /> Delete
               </button>
             </div>
           </div>
@@ -320,6 +418,18 @@ const CentersManagement = ({ refreshTrigger }) => {
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   />
+                </div>
+                
+                <div className="admin-form-group">
+                  <label className="admin-form-label">Plus Code (Google Maps Plus Code)</label>
+                  <input
+                    type="text"
+                    className="admin-form-input"
+                    placeholder="e.g., CWC8+QF Imus, Cavite"
+                    value={formData.plus_code}
+                    onChange={(e) => setFormData({ ...formData, plus_code: e.target.value })}
+                  />
+                  <small style={{ color: '#666', fontSize: '11px' }}>Optional: Exact Google Maps location code</small>
                 </div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
