@@ -72,7 +72,7 @@ const AlertsList = ({ refreshTrigger }) => {
   }
 
   if (alerts.length === 0) {
-    return <p className="no-data">No active alerts at the moment. Stay safe! 👍</p>;
+    return <p className="no-data">No active alerts at the moment. Stay safe!</p>;
   }
 
   return (
@@ -84,7 +84,7 @@ const AlertsList = ({ refreshTrigger }) => {
           </span>
           <h3>{alert.title}</h3>
           <p>{alert.message}</p>
-          <small>🕒 {new Date(alert.created_at).toLocaleString()}</small>
+          <small>{new Date(alert.created_at).toLocaleString()}</small>
         </div>
       ))}
     </>

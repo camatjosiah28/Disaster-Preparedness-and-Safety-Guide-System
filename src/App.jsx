@@ -19,6 +19,10 @@ import EmergencyContactsManagement from './components/admin/EmergencyContactsMan
 import GuidesManagement from './components/admin/GuidesManagement';
 import UsersManagement from './components/admin/UsersManagement';
 
+// Import professional icons
+import { MdCampaign, MdLocalHospital, MdMap, MdBook, MdPhone, MdPerson } from 'react-icons/md';
+import { FaShieldAlt, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+
 import './App.css';
 
 // User App Component
@@ -41,45 +45,72 @@ function UserApp({ setView, activeTab, setActiveTab }) {
       />
 
       <div className={`emergency-banner ${user ? 'resident' : 'guest'}`}>
-        {user 
-          ? '✅ You are registered in our system. Stay safe and monitor alerts!' 
-          : '⚠️ Guest Mode: Register for priority assistance during emergencies.'}
+        {user ? (
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+            <FaCheckCircle color="#4caf50" size={18} />
+            You are registered in our system. Stay safe and monitor alerts!
+          </span>
+        ) : (
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+            <FaExclamationTriangle color="#ff9800" size={18} />
+            Guest Mode: Register for priority assistance during emergencies.
+          </span>
+        )}
       </div>
 
       <main className="content">
         {activeTab === 'home' && (
           <section>
-            <h2>📢 Active Alerts</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <MdCampaign size={28} color="#f44336" />
+              Active Alerts
+            </h2>
             <AlertsList refreshTrigger={refreshTrigger} />
-            <h2 style={{ marginTop: '2rem' }}>🏥 Emergency Hotlines</h2>
+            
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '2rem' }}>
+              <MdLocalHospital size={28} color="#4caf50" />
+              Emergency Hotlines
+            </h2>
             <EmergencyContacts refreshTrigger={refreshTrigger} />
           </section>
         )}
 
         {activeTab === 'maps' && (
           <section>
-            <h2>📍 Evacuation Centers - Alapan, Imus Cavite</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <MdMap size={28} color="#2196f3" />
+              Evacuation Centers - Alapan, Imus Cavite
+            </h2>
             <EvacuationMap refreshTrigger={refreshTrigger} />
           </section>
         )}
 
         {activeTab === 'guides' && (
           <section>
-            <h2>📚 Preparedness Guides</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <MdBook size={28} color="#ff9800" />
+              Preparedness Guides
+            </h2>
             <GuidesList refreshTrigger={refreshTrigger} />
           </section>
         )}
 
         {activeTab === 'contacts' && (
           <section>
-            <h2>📞 Emergency Contacts</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <MdPhone size={28} color="#4caf50" />
+              Emergency Contacts
+            </h2>
             <ContactsList refreshTrigger={refreshTrigger} />
           </section>
         )}
 
         {activeTab === 'profile' && user && (
           <section>
-            <h2>👤 My Profile</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <MdPerson size={28} color="#2196f3" />
+              My Profile
+            </h2>
             <UserProfile refreshTrigger={refreshTrigger} />
           </section>
         )}
