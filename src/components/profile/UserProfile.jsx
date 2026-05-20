@@ -227,15 +227,11 @@ const UserProfile = ({ refreshTrigger }) => {
                 <Heart size={18} />
                 PWD Information
               </h4>
-              <p>
-                <Activity size={16} />
-                <strong>Disability Type:</strong> 
-                <span>{pwdInfo.disability_category}</span>
-              </p>
+              {/* ITO ANG TINANGGAL KO - DISABILITY TYPE */}
               <p>
                 <Activity size={16} />
                 <strong>Mobility Level:</strong> 
-                <span>{pwdInfo.mobility_level}</span>
+                <span>{pwdInfo.mobility_level || 'Not specified'}</span>
               </p>
               {pwdInfo.needs_medical_device && (
                 <p>
@@ -248,7 +244,7 @@ const UserProfile = ({ refreshTrigger }) => {
                 <p>
                   <Shield size={16} />
                   <strong>Emergency Contact:</strong> 
-                  <span>{pwdInfo.emergency_contact_name} ({pwdInfo.emergency_contact_number})</span>
+                  <span>{pwdInfo.emergency_contact_name} ({pwdInfo.emergency_contact_number || 'No number provided'})</span>
                 </p>
               )}
             </div>

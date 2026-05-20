@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import PWDRegistration from './PWDRegistration';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Register = ({ setView }) => {
   const initialState = {
@@ -11,7 +12,6 @@ const Register = ({ setView }) => {
     address: '',
     street: '',
     isPWD: false,
-    disabilityType: '',
     mobilityLevel: 'Independent',
     needsMedicalDevice: false,
     deviceDetails: '',
@@ -25,15 +25,14 @@ const Register = ({ setView }) => {
   const [success, setSuccess] = useState('');
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  // List of barangays - Alapan 1 lang
   const barangays = [
     { value: 'Alapan 1-A', label: 'Alapan 1-A' },
     { value: 'Alapan 1-B', label: 'Alapan 1-B' },
     { value: 'Alapan 1-C', label: 'Alapan 1-C' }
   ];
 
-  // Import logo from assets
   let logoSrc;
   try {
     logoSrc = new URL('../../assets/logo.png', import.meta.url).href;
@@ -54,52 +53,38 @@ const Register = ({ setView }) => {
     };
   };
 
-  // STRICT EMAIL VALIDATION - .com LANG TALAGA!
   const validateEmail = (email) => {
-    // Remove spaces
     email = email.trim().toLowerCase();
     
-    // Check if empty
     if (!email) return 'Email is required';
-    
-    // Check if email contains @
     if (!email.includes('@')) return 'Email must contain @ symbol';
     
-    // Split email into local part and domain
     const parts = email.split('@');
     if (parts.length !== 2) return 'Invalid email format';
     
     const localPart = parts[0];
     const domain = parts[1];
     
-    // Check local part is not empty
     if (localPart.length === 0) return 'Email cannot start with @';
-    
-    // Check domain is not empty
     if (domain.length === 0) return 'Domain cannot be empty';
     
-    // MUST end with .com EXACTLY
     if (!domain.endsWith('.com')) {
       return 'Email must end with .com (e.g., name@gmail.com)';
     }
     
-    // Check na hindi pwedeng .com lang ang buong domain (dapat may something before .com)
     if (domain === '.com') {
       return 'Invalid domain (e.g., gmail.com, yahoo.com)';
     }
     
-    // Check na dapat may laman bago ang .com
-    const domainWithoutCom = domain.slice(0, -4); // Remove .com
+    const domainWithoutCom = domain.slice(0, -4);
     if (domainWithoutCom.length === 0) {
       return 'Invalid domain (e.g., gmail.com, yahoo.com)';
     }
     
-    // Check na hindi pwedeng magkaroon ng additional dots after .com
     if (domain.split('.').length > 2) {
       return 'Invalid domain (use simple domain like gmail.com, not gmail.com.ph)';
     }
     
-    // Check na walang special characters sa domain except dot
     const domainName = domainWithoutCom;
     if (!/^[a-zA-Z0-9\-]+$/.test(domainName)) {
       return 'Domain name can only contain letters, numbers, and hyphens';
@@ -108,31 +93,27 @@ const Register = ({ setView }) => {
     return '';
   };
 
-  // Philippine mobile number validation (11 digits)
   const validatePhilippineNumber = (number) => {
-    // Remove spaces, dashes, plus sign, parentheses
-    let cleanNumber = number.replace(/[\s\-\(\)\+]/g, '');
+    let cleanNumber = number.replace(/\D/g, '');
     
-    // Check if empty
     if (!cleanNumber) return 'Contact number is required';
     
-    // Handle 63 prefix (convert to 0)
     if (cleanNumber.startsWith('63')) {
       cleanNumber = '0' + cleanNumber.slice(2);
     }
     
-    // Should start with 0 and have 11 digits total for PH mobile
+    if (cleanNumber.length === 10 && cleanNumber.startsWith('9')) {
+      cleanNumber = '0' + cleanNumber;
+    }
+    
     if (!cleanNumber.startsWith('0')) {
       return 'Must start with 0 (e.g., 09123456789)';
     }
     
-    // Check if exactly 11 digits
-    if (!/^\d{11}$/.test(cleanNumber)) {
+    if (cleanNumber.length !== 11) {
       return 'Must be exactly 11 digits (e.g., 09123456789)';
     }
     
-    // Check if valid mobile prefix (common Philippine prefixes)
-    const prefix = cleanNumber.slice(0, 4);
     const validPrefixes = [
       '0917', '0918', '0919', '0920', '0921', '0922', '0923', '0924', '0925', '0926', '0927',
       '0935', '0936', '0937', '0938', '0939', '0945', '0946', '0947', '0948', '0949',
@@ -143,15 +124,29 @@ const Register = ({ setView }) => {
       '0942', '0943', '0944', '0994', '0998', '0999'
     ];
     
-    // Check first 4 digits or first 3 digits for some prefixes
     const first4 = cleanNumber.slice(0, 4);
     const first3 = cleanNumber.slice(0, 3);
     
     if (!validPrefixes.includes(first4) && !validPrefixes.some(p => p.startsWith(first3))) {
-      return 'Please enter a valid Philippine mobile number (Globe/Smart/Sun/DITO)';
+      return 'Please enter a valid Philippine mobile number';
     }
     
     return '';
+  };
+
+  const cleanPhoneNumber = (phone) => {
+    if (!phone) return '';
+    let cleaned = phone.replace(/\D/g, '');
+    
+    if (cleaned.startsWith('63')) {
+      cleaned = '0' + cleaned.slice(2);
+    }
+    
+    if (cleaned.length === 10 && cleaned.startsWith('9')) {
+      cleaned = '0' + cleaned;
+    }
+    
+    return cleaned;
   };
 
   const handleEmailChange = (e) => {
@@ -168,8 +163,8 @@ const Register = ({ setView }) => {
 
   const handlePhoneChange = (e) => {
     let { value } = e.target;
-    // Allow only numbers, spaces, dashes, plus, parentheses
-    value = value.replace(/[^\d\s\-\(\)\+]/g, '');
+    value = value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
     
     setFormData(prev => ({ ...prev, contactNumber: value }));
     
@@ -192,15 +187,13 @@ const Register = ({ setView }) => {
   };
 
   const validateForm = () => {
-    const { fullName, email, password, contactNumber, address, street, isPWD, disabilityType } = formData;
+    const { fullName, email, password, contactNumber, address, street, isPWD, mobilityLevel, emergencyContactName, emergencyContactNumber } = formData;
     
-    // Check required fields
     if (!fullName || !email || !password || !contactNumber || !address || !street) {
       setError('Please fill in all required fields');
       return false;
     }
 
-    // Validate email
     const emailValidationError = validateEmail(email);
     if (emailValidationError) {
       setEmailError(emailValidationError);
@@ -208,7 +201,6 @@ const Register = ({ setView }) => {
       return false;
     }
 
-    // Validate phone number
     const phoneValidationError = validatePhilippineNumber(contactNumber);
     if (phoneValidationError) {
       setPhoneError(phoneValidationError);
@@ -216,22 +208,37 @@ const Register = ({ setView }) => {
       return false;
     }
 
-    // Validate password
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.isValid) {
       setError('Password must have at least 6 characters, 1 uppercase letter, and 1 number');
       return false;
     }
 
-    if (isPWD && !disabilityType) {
-      setError('Please select disability type for PWD registration');
-      return false;
+    if (isPWD) {
+      if (!mobilityLevel) {
+        setError('Please select level of assistance needed for PWD registration');
+        return false;
+      }
+      
+      if (!emergencyContactName) {
+        setError('Please provide emergency contact name for PWD registration');
+        return false;
+      }
+      
+      if (!emergencyContactNumber) {
+        setError('Please provide emergency contact number for PWD registration');
+        return false;
+      }
+
+      if (formData.needsMedicalDevice && !formData.deviceDetails) {
+        setError('Please specify medical device/s needed');
+        return false;
+      }
     }
 
     return true;
   };
 
-  // Combine address and street for full address
   const getFullAddress = () => {
     const barangay = barangays.find(b => b.value === formData.address);
     const barangayName = barangay ? barangay.label : formData.address;
@@ -240,16 +247,6 @@ const Register = ({ setView }) => {
 
   const passwordValidation = validatePassword(formData.password);
   const isPasswordValid = passwordValidation.isValid;
-
-  // Function to sign out after registration
-  const signOutAfterRegistration = async () => {
-    try {
-      await supabase.auth.signOut();
-      console.log('Auto sign-out after registration successful');
-    } catch (error) {
-      console.error('Error during auto sign-out:', error);
-    }
-  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -265,92 +262,108 @@ const Register = ({ setView }) => {
 
     try {
       const fullAddress = getFullAddress();
-      console.log('Full address:', fullAddress);
+      const cleanedPhone = cleanPhoneNumber(formData.contactNumber);
+      const emailToUse = formData.email.trim().toLowerCase();
       
-      // STEP 1: Create auth user
+      // STEP 1: Check if email exists in public.users
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('email')
+        .eq('email', emailToUse)
+        .maybeSingle();
+      
+      if (existingUser) {
+        throw new Error('Email already registered. Please login instead.');
+      }
+      
+      // STEP 2: Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
+        email: emailToUse,
         password: formData.password,
         options: {
           data: {
             full_name: formData.fullName,
             role: formData.isPWD ? 'pwd' : 'resident',
-            address: fullAddress
+            address: fullAddress,
+            contact_number: cleanedPhone
           }
         }
       });
 
       if (authError) {
-        console.error('Auth error:', authError);
-        if (authError.message.includes('User already registered')) {
+        if (authError.message.includes('already registered') || 
+            authError.message.includes('User already registered')) {
           throw new Error('Email already registered. Please login instead.');
-        } else {
-          throw new Error(authError.message);
         }
+        throw new Error(authError.message);
+      }
+
+      if (authData?.user && !authData.user.identities?.length) {
+        throw new Error('Email already registered. Please login instead.');
       }
 
       if (!authData?.user) {
         throw new Error('No user data returned from authentication');
       }
 
-      console.log('Auth user created:', authData.user.id);
+      console.log('Auth user created successfully:', authData.user.id);
 
-      // Clean phone number before saving (remove spaces, dashes, etc.)
-      const cleanPhoneNumber = formData.contactNumber.replace(/[\s\-\(\)\+]/g, '');
+      // STEP 3: Wait for trigger or manual insert
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // STEP 2: Insert into users table
-      const userData = {
-        auth_id: authData.user.id,
-        email: formData.email,
-        full_name: formData.fullName,
-        contact_number: cleanPhoneNumber,
-        address: fullAddress,
-        role: formData.isPWD ? 'pwd' : 'resident',
-        created_at: new Date().toISOString()
-      };
-
-      if (formData.isPWD && formData.disabilityType) {
-        userData.disability_type = formData.disabilityType;
-      }
-
-      console.log('Inserting user data:', userData);
-
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert([userData]);
-
-      if (insertError) {
-        console.error('Insert error:', insertError);
-      }
-
-      // STEP 3: Get user_id for PWD registration
-      const { data: userRecord, error: fetchError } = await supabase
+      // STEP 4: Get user record
+      let { data: userRecord, error: fetchError } = await supabase
         .from('users')
         .select('user_id')
         .eq('auth_id', authData.user.id)
         .maybeSingle();
 
-      // STEP 4: Insert PWD record if applicable
-      if (formData.isPWD && formData.disabilityType && userRecord) {
+      let userId = userRecord?.user_id;
+
+      if (!userId) {
+        console.log('No trigger detected, manually inserting user...');
+        
+        const userData = {
+          auth_id: authData.user.id,
+          email: emailToUse,
+          full_name: formData.fullName,
+          contact_number: cleanedPhone,
+          address: fullAddress,
+          role: formData.isPWD ? 'pwd' : 'resident',
+          created_at: new Date().toISOString()
+        };
+
+        const { data: insertData, error: insertError } = await supabase
+          .from('users')
+          .insert([userData])
+          .select();
+
+        if (insertError) {
+          console.error('Insert error:', insertError);
+          throw new Error(`Registration failed: ${insertError.message}`);
+        }
+
+        userId = insertData[0]?.user_id;
+        console.log('Manual insert successful, userId:', userId);
+      } else {
+        console.log('Trigger inserted user automatically, userId:', userId);
+      }
+
+      // STEP 5: Insert PWD record if applicable (GUMAAGANA NA ITO)
+      if (formData.isPWD && userId) {
+        const cleanedEmergencyNumber = cleanPhoneNumber(formData.emergencyContactNumber);
+        
         const pwdData = {
-          user_id: userRecord.user_id,
-          disability_category: formData.disabilityType,
+          user_id: userId,
           mobility_level: formData.mobilityLevel || 'Independent',
           needs_medical_device: formData.needsMedicalDevice || false,
           auth_id: authData.user.id,
-          created_at: new Date().toISOString()
+          emergency_contact_name: formData.emergencyContactName || null,
+          emergency_contact_number: cleanedEmergencyNumber || null,
         };
 
         if (formData.deviceDetails) {
           pwdData.device_details = formData.deviceDetails;
-        }
-        if (formData.emergencyContactName) {
-          pwdData.emergency_contact_name = formData.emergencyContactName;
-        }
-        if (formData.emergencyContactNumber) {
-          // Clean emergency contact number as well
-          const cleanEmergencyNumber = formData.emergencyContactNumber.replace(/[\s\-\(\)\+]/g, '');
-          pwdData.emergency_contact_number = cleanEmergencyNumber;
         }
 
         console.log('Inserting PWD data:', pwdData);
@@ -360,24 +373,24 @@ const Register = ({ setView }) => {
           .insert([pwdData]);
 
         if (pwdError) {
-          console.warn('PWD registration warning:', pwdError.message);
+          console.error('PWD registration error:', pwdError.message);
         } else {
           console.log('PWD registration successful');
         }
       }
 
-      // STEP 5: Sign out the user to prevent auto-login
-      await signOutAfterRegistration();
+      // STEP 6: Sign out the user
+      await supabase.auth.signOut();
 
-      setSuccess('✅ Registration Successful! Please login with your credentials.');
+      setSuccess('Registration Successful! Please check your email to confirm your account, then login.');
       setFormData(initialState);
       setEmailError('');
       setPhoneError('');
+      setShowPassword(false);
       
-      // Redirect to login tab after 2 seconds
       setTimeout(() => {
         setView('login');
-      }, 2000);
+      }, 3000);
       
     } catch (error) {
       console.error('Registration error:', error);
@@ -390,7 +403,6 @@ const Register = ({ setView }) => {
   return (
     <div className="auth-page">
       <div className="auth-card register-card">
-        {/* Logo */}
         <div className="auth-logo-container" style={{ marginBottom: '10px' }}>
           {logoSrc ? (
             <img src={logoSrc} alt="Alapan Ready Logo" className="auth-logo" style={{ height: '60px' }} />
@@ -449,7 +461,6 @@ const Register = ({ setView }) => {
             required
           />
           
-          {/* Email field - .com ONLY */}
           <div>
             <input 
               name="email"
@@ -459,86 +470,71 @@ const Register = ({ setView }) => {
               value={formData.email}
               onChange={handleEmailChange}
               disabled={loading}
-              style={{ 
-                borderColor: emailError ? '#ff9800' : undefined
-              }}
+              style={{ borderColor: emailError ? '#ff9800' : undefined }}
               required
             />
             {emailError && (
-              <div style={{ 
-                fontSize: '0.75rem', 
-                color: '#e65100',
-                marginTop: '4px',
-                marginLeft: '4px'
-              }}>
+              <div style={{ fontSize: '0.75rem', color: '#e65100', marginTop: '4px', marginLeft: '4px' }}>
                 ⚠️ {emailError}
               </div>
             )}
-            <div style={{ 
-              fontSize: '0.7rem', 
-              color: '#4caf50',
-              marginTop: '4px',
-              marginLeft: '4px',
-              fontWeight: '500'
-            }}>
-              ✓ Only .com domains are allowed (e.g., name@gmail.com, name@yahoo.com)
-            </div>
           </div>
           
-          {/* Password field */}
-          <div>
+          <div style={{ position: 'relative' }}>
             <input 
               name="password"
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="Password *" 
               className="auth-input" 
               value={formData.password}
               onChange={handleChange}
               disabled={loading}
               style={{ 
-                borderColor: formData.password && !isPasswordValid ? '#ff9800' : undefined
+                borderColor: formData.password && !isPasswordValid ? '#ff9800' : undefined,
+                paddingRight: '40px'
               }}
               required
             />
-            
-            {formData.password && (
-              <div style={{ 
-                marginTop: '8px',
-                fontSize: '0.75rem',
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '0',
                 display: 'flex',
-                flexWrap: 'wrap',
-                gap: '12px',
-                color: '#666'
-              }}>
-                <span style={{ 
-                  color: passwordValidation.hasMinLength ? '#4caf50' : '#999',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                  {passwordValidation.hasMinLength ? '✓' : '○'} 6+ characters
-                </span>
-                <span style={{ 
-                  color: passwordValidation.hasUpperCase ? '#4caf50' : '#999',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                  {passwordValidation.hasUpperCase ? '✓' : '○'} Uppercase
-                </span>
-                <span style={{ 
-                  color: passwordValidation.hasNumber ? '#4caf50' : '#999',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                  {passwordValidation.hasNumber ? '✓' : '○'} Number
-                </span>
-              </div>
-            )}
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#666',
+                fontSize: '1.1rem',
+                opacity: loading ? 0.5 : 1,
+                pointerEvents: loading ? 'none' : 'auto'
+              }}
+              disabled={loading}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
           
-          {/* Contact Number field with Philippine format validation */}
+          {formData.password && (
+            <div style={{ marginTop: '8px', fontSize: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '12px', color: '#666' }}>
+              <span style={{ color: passwordValidation.hasMinLength ? '#4caf50' : '#999' }}>
+                {passwordValidation.hasMinLength ? '✓' : '○'} 6+ characters
+              </span>
+              <span style={{ color: passwordValidation.hasUpperCase ? '#4caf50' : '#999' }}>
+                {passwordValidation.hasUpperCase ? '✓' : '○'} Uppercase
+              </span>
+              <span style={{ color: passwordValidation.hasNumber ? '#4caf50' : '#999' }}>
+                {passwordValidation.hasNumber ? '✓' : '○'} Number
+              </span>
+            </div>
+          )}
+          
           <div>
             <input 
               name="contactNumber"
@@ -548,36 +544,20 @@ const Register = ({ setView }) => {
               value={formData.contactNumber}
               onChange={handlePhoneChange}
               disabled={loading}
-              style={{ 
-                borderColor: phoneError ? '#ff9800' : undefined
-              }}
+              style={{ borderColor: phoneError ? '#ff9800' : undefined }}
               required
             />
             {phoneError && (
-              <div style={{ 
-                fontSize: '0.75rem', 
-                color: '#e65100',
-                marginTop: '4px',
-                marginLeft: '4px'
-              }}>
+              <div style={{ fontSize: '0.75rem', color: '#e65100', marginTop: '4px', marginLeft: '4px' }}>
                 ⚠️ {phoneError}
               </div>
             )}
-            <div style={{ 
-              fontSize: '0.7rem', 
-              color: '#999',
-              marginTop: '4px',
-              marginLeft: '4px'
-            }}>
-              Format: 09123456789 (11 digits, starts with 0)
-            </div>
           </div>
           
-          {/* Street/Block/Lot Field */}
           <input 
             name="street"
             type="text" 
-            placeholder="Street/Block/Lot No. * (e.g., Phase 1 Block 5 Lot 12)" 
+            placeholder="Street/Block/Lot No. *" 
             className="auth-input" 
             value={formData.street}
             onChange={handleChange}
@@ -585,7 +565,6 @@ const Register = ({ setView }) => {
             required
           />
           
-          {/* Barangay Dropdown - Alapan 1 only */}
           <select
             name="address"
             className="auth-input"
@@ -593,10 +572,6 @@ const Register = ({ setView }) => {
             onChange={handleChange}
             disabled={loading}
             required
-            style={{ 
-              appearance: 'menulist',
-              backgroundImage: 'none'
-            }}
           >
             <option value="">Select Barangay *</option>
             {barangays.map((barangay) => (
@@ -606,13 +581,7 @@ const Register = ({ setView }) => {
             ))}
           </select>
           
-          <div style={{ 
-            margin: '15px 0', 
-            padding: '10px', 
-            background: '#f5f5f5', 
-            borderRadius: '5px',
-            textAlign: 'left'
-          }}>
+          <div style={{ margin: '15px 0', padding: '10px', background: '#f5f5f5', borderRadius: '5px' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
               <input
                 type="checkbox"
@@ -634,11 +603,7 @@ const Register = ({ setView }) => {
             />
           )}
 
-          <button 
-            type="submit"
-            className="btn-main"
-            disabled={loading}
-          >
+          <button type="submit" className="btn-main" disabled={loading}>
             {loading ? 'Registering...' : 'Register Now'}
           </button>
         </form>
@@ -646,11 +611,7 @@ const Register = ({ setView }) => {
         <p style={{ marginTop: '20px', textAlign: 'center' }}>
           May account na? <span className="link" onClick={() => !loading && setView('login')}>Login Here</span>
         </p>
-        <button 
-          className="btn-guest-outline" 
-          onClick={() => !loading && setView('guest')}
-          disabled={loading}
-        >
+        <button className="btn-guest-outline" onClick={() => !loading && setView('guest')} disabled={loading}>
           Back as Guest
         </button>
       </div>
