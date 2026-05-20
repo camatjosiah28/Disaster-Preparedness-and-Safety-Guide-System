@@ -45,24 +45,66 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Clear all auth data from storage
+  const clearAuthStorage = () => {
+    console.log('🧹 Clearing all auth storage...');
+    
+    // Clear localStorage items
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.includes('supabase') || key.includes('sb-') || key.includes('auth'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    // Clear sessionStorage
+    sessionStorage.clear();
+    
+    // Clear cookies
+    document.cookie.split(";").forEach(function(c) {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    console.log('✅ Auth storage cleared');
+  };
+
   // Check current user on app load
   const checkUser = async () => {
     try {
       console.log('🔍 Checking current user...');
-      const { data: { user }, error } = await supabase.auth.getUser();
       
-      if (error) throw error;
+      // Get session first
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (user) {
-        console.log('👤 User found:', user.email);
-        setUser(user);
-        await fetchUserProfile(user.id);
+      if (sessionError) throw sessionError;
+      
+      if (session?.user) {
+        console.log('👤 User found from session:', session.user.email);
+        setUser(session.user);
+        await fetchUserProfile(session.user.id);
       } else {
-        console.log('No user found');
+        console.log('No session found, checking getUser...');
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error) throw error;
+        
+        if (user) {
+          console.log('👤 User found:', user.email);
+          setUser(user);
+          await fetchUserProfile(user.id);
+        } else {
+          console.log('No user found');
+          setUser(null);
+          setUserProfile(null);
+        }
       }
     } catch (error) {
       console.error('Error checking user:', error);
       setAuthError(error.message);
+      setUser(null);
+      setUserProfile(null);
     } finally {
       setLoading(false);
     }
@@ -70,6 +112,8 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize auth listener
   useEffect(() => {
+    let mounted = true;
+    
     const initializeAuth = async () => {
       try {
         await checkUser();
@@ -77,31 +121,38 @@ export const AuthProvider = ({ children }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
           console.log('🔔 Auth event:', event);
           
+          if (!mounted) return;
+          
           try {
-            if (session?.user) {
-              console.log('User from event:', session.user.email);
-              setUser(session.user);
-              await fetchUserProfile(session.user.id);
-            } else {
-              console.log('No session, clearing user data');
+            if (event === 'SIGNED_OUT') {
+              console.log('User signed out, clearing state');
               setUser(null);
               setUserProfile(null);
+              clearAuthStorage();
+            } else if (event === 'SIGNED_IN' && session?.user) {
+              console.log('User signed in:', session.user.email);
+              setUser(session.user);
+              await fetchUserProfile(session.user.id);
+            } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+              console.log('Token refreshed for:', session.user.email);
+              setUser(session.user);
             }
           } catch (err) {
             console.error('Error in auth state change:', err);
-            setAuthError(err.message);
           }
         });
 
         return () => {
+          mounted = false;
           if (subscription?.unsubscribe) {
             subscription.unsubscribe();
           }
         };
       } catch (err) {
         console.error('Error initializing auth:', err);
-        setAuthError(err.message);
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -229,17 +280,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function
+  // ✅ FIXED: Logout function - mas aggressive na pag-clear
   const logout = async () => {
     console.log('🚪 Logging out...');
-    setUser(null);
-    setUserProfile(null);
     
     try {
-      await supabase.auth.signOut();
-      console.log('Logout successful');
+      // 1. Clear state muna
+      setUser(null);
+      setUserProfile(null);
+      
+      // 2. Clear all storage
+      clearAuthStorage();
+      
+      // 3. Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Sign out error:', error);
+      }
+      
+      // 4. Force clear session
+      await supabase.auth.setSession(null);
+      
+      console.log('✅ Logout successful');
+      
+      // 5. Redirect to login page with cache busting
+      window.location.href = '/login?t=' + Date.now();
+      
     } catch (err) {
       console.error('Logout error:', err);
+      // Even if may error, clear pa rin and redirect
+      setUser(null);
+      setUserProfile(null);
+      clearAuthStorage();
+      window.location.href = '/login';
     }
   };
 

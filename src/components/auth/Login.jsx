@@ -1,7 +1,7 @@
 // src/components/auth/Login.jsx
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Shield, User } from 'lucide-react';
+import { Shield, User, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 
 const Login = ({ setView }) => {
@@ -11,6 +11,7 @@ const Login = ({ setView }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [loginType, setLoginType] = useState('user');
+  const [showPassword, setShowPassword] = useState(false); // ✅ BAGONG STATE para sa show/hide password
   
   const { login } = useAuth();
 
@@ -92,6 +93,11 @@ const Login = ({ setView }) => {
       setError(error.message || 'Invalid email or password');
       setIsLoading(false);
     }
+  };
+
+  // ✅ Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -192,6 +198,7 @@ const Login = ({ setView }) => {
         )}
         
         <form onSubmit={handleLogin}>
+          {/* Email Input */}
           <input 
             type="email" 
             placeholder="Email Address" 
@@ -202,16 +209,45 @@ const Login = ({ setView }) => {
             autoComplete="email"
             required
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            className="auth-input" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} 
-            disabled={isLoading}
-            autoComplete="current-password"
-            required
-          />
+          
+          {/* Password Input with Show/Hide Button */}
+          <div style={{ position: 'relative', width: '100%' }}>
+            <input 
+              type={showPassword ? "text" : "password"} 
+              placeholder="Password" 
+              className="auth-input" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} 
+              disabled={isLoading}
+              autoComplete="current-password"
+              required
+              style={{ paddingRight: '45px' }}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#6b7280',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          
           <button 
             type="submit"
             className="btn-main"
