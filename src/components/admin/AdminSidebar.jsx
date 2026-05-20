@@ -1,13 +1,14 @@
 import React from 'react';
 import { 
   LayoutDashboard, Building2, AlertTriangle, Heart, 
-  Phone, BookOpen, Users 
+  Phone, BookOpen, Users, MapPin
 } from 'lucide-react';
 
 const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
   const menuItems = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { id: 'centers', name: 'Evacuation Centers', icon: Building2 },
+    { id: 'population', name: 'Barangay Population', icon: MapPin },  // ✅ MERON NA
     { id: 'alerts', name: 'Alerts', icon: AlertTriangle },
     { id: 'pwd', name: 'PWD Registry', icon: Heart },
     { id: 'contacts', name: 'Emergency Contacts', icon: Phone },
@@ -17,7 +18,6 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
 
   return (
     <>
-      {/* Backdrop for mobile */}
       {sidebarOpen && (
         <div 
           className="admin-sidebar-backdrop"

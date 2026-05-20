@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../supabaseClient';
-// Import professional icons - same sa EvacuationMap
-import { MdPhone, MdGroup, MdLocationOn, MdDirections, MdSchool, MdBusiness, MdSportsCricket, MdShield, MdAdd, MdEdit, MdDelete } from 'react-icons/md';
+// Import professional icons
+import { MdPhone, MdGroup, MdLocationOn, MdDirections, MdSchool, MdBusiness, MdSportsCricket, MdShield, MdAdd, MdEdit, MdDelete, MdPeople, MdTrendingUp, MdTrendingDown } from 'react-icons/md';
 import { FaExternalLinkAlt, FaGoogle, FaWaze } from 'react-icons/fa';
 
 const CentersManagement = ({ refreshTrigger }) => {
@@ -9,12 +9,19 @@ const CentersManagement = ({ refreshTrigger }) => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingCenter, setEditingCenter] = useState(null);
+  const [showOccupancyModal, setShowOccupancyModal] = useState(false);
+  const [selectedCenter, setSelectedCenter] = useState(null);
+  const [occupancyUpdate, setOccupancyUpdate] = useState({
+    current_occupancy: 0,
+    action: 'set' // 'set', 'add', 'subtract'
+  });
   const [formData, setFormData] = useState({
     center_name: '',
     address: '',
     latitude: '',
     longitude: '',
     capacity: '',
+    current_occupancy: 0,  // ✅ IDINAGDAG KO ITO
     contact_number: '',
     status: 'Open',
     plus_code: ''
@@ -41,7 +48,7 @@ const CentersManagement = ({ refreshTrigger }) => {
     fetchCenters();
   }, [fetchCenters, refreshTrigger]);
 
-  // Get icon based on center name - same sa EvacuationMap
+  // Get icon based on center name
   const getCenterIcon = (centerName) => {
     const name = centerName?.toLowerCase() || '';
     
@@ -57,7 +64,7 @@ const CentersManagement = ({ refreshTrigger }) => {
     return <MdShield size={28} color="#f44336" />;
   };
 
-  // Get status color - same sa EvacuationMap
+  // Get status color
   const getStatusColor = (status) => {
     switch(status?.toLowerCase()) {
       case 'open': return '#4caf50';
@@ -65,6 +72,14 @@ const CentersManagement = ({ refreshTrigger }) => {
       case 'full': return '#ff9800';
       default: return '#4caf50';
     }
+  };
+
+  // Get occupancy rate color
+  const getOccupancyRateColor = (current, capacity) => {
+    const rate = capacity > 0 ? (current / capacity) * 100 : 0;
+    if (rate >= 90) return '#ef4444'; // Red - Critical
+    if (rate >= 70) return '#f59e0b'; // Orange - Warning
+    return '#10b981'; // Green - Safe
   };
 
   const openGoogleMaps = (center) => {
@@ -96,6 +111,58 @@ const CentersManagement = ({ refreshTrigger }) => {
     }
   };
 
+  // ✅ NEW: Quick update occupancy function
+  const handleQuickOccupancyUpdate = async () => {
+    if (!selectedCenter) return;
+    
+    let newOccupancy = selectedCenter.current_occupancy || 0;
+    
+    switch(occupancyUpdate.action) {
+      case 'add':
+        newOccupancy += occupancyUpdate.current_occupancy;
+        break;
+      case 'subtract':
+        newOccupancy -= occupancyUpdate.current_occupancy;
+        break;
+      default:
+        newOccupancy = occupancyUpdate.current_occupancy;
+    }
+    
+    // Validate
+    if (newOccupancy < 0) {
+      alert('Occupancy cannot be negative!');
+      return;
+    }
+    
+    if (newOccupancy > selectedCenter.capacity) {
+      if (!window.confirm(`Warning: This exceeds capacity (${selectedCenter.capacity}). Continue anyway?`)) {
+        return;
+      }
+    }
+    
+    try {
+      const { error } = await supabase
+        .from('evacuation_centers')
+        .update({ 
+          current_occupancy: newOccupancy,
+          // Auto-update status based on occupancy
+          status: newOccupancy >= selectedCenter.capacity ? 'Full' : 'Open'
+        })
+        .eq('center_id', selectedCenter.center_id);
+      
+      if (error) throw error;
+      
+      await fetchCenters();
+      setShowOccupancyModal(false);
+      setSelectedCenter(null);
+      alert(`Occupancy updated successfully! New count: ${newOccupancy}`);
+      
+    } catch (error) {
+      console.error('Error updating occupancy:', error);
+      alert('Error updating occupancy: ' + error.message);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -108,10 +175,16 @@ const CentersManagement = ({ refreshTrigger }) => {
         latitude: formData.latitude || null,
         longitude: formData.longitude || null,
         capacity: formData.capacity ? parseInt(formData.capacity) : null,
+        current_occupancy: formData.current_occupancy ? parseInt(formData.current_occupancy) : 0, // ✅ IDINAGDAG KO ITO
         contact_number: formData.contact_number || null,
         status: formData.status,
         plus_code: formData.plus_code || null
       };
+
+      // Auto-set status to Full if occupancy equals or exceeds capacity
+      if (centerData.current_occupancy >= centerData.capacity) {
+        centerData.status = 'Full';
+      }
 
       if (editingCenter) {
         const { error } = await supabase
@@ -120,14 +193,14 @@ const CentersManagement = ({ refreshTrigger }) => {
           .eq('center_id', editingCenter.center_id);
         
         if (error) throw error;
-        console.log('Center updated successfully');
+        alert('Center updated successfully!');
       } else {
         const { error } = await supabase
           .from('evacuation_centers')
           .insert([centerData]);
         
         if (error) throw error;
-        console.log('Center created successfully');
+        alert('Center created successfully!');
       }
       
       await fetchCenters();
@@ -149,6 +222,7 @@ const CentersManagement = ({ refreshTrigger }) => {
           .eq('center_id', id);
         
         if (error) throw error;
+        alert('Center deleted successfully!');
         fetchCenters();
       } catch (error) {
         console.error('Error deleting center:', error);
@@ -165,6 +239,7 @@ const CentersManagement = ({ refreshTrigger }) => {
       latitude: '',
       longitude: '',
       capacity: '',
+      current_occupancy: 0, // ✅ IDINAGDAG KO ITO
       contact_number: '',
       status: 'Open',
       plus_code: ''
@@ -180,6 +255,7 @@ const CentersManagement = ({ refreshTrigger }) => {
         latitude: center.latitude || '',
         longitude: center.longitude || '',
         capacity: center.capacity || '',
+        current_occupancy: center.current_occupancy || 0, // ✅ IDINAGDAG KO ITO
         contact_number: center.contact_number || '',
         status: center.status || 'Open',
         plus_code: center.plus_code || ''
@@ -188,6 +264,15 @@ const CentersManagement = ({ refreshTrigger }) => {
       resetForm();
     }
     setShowModal(true);
+  };
+
+  const openOccupancyModal = (center) => {
+    setSelectedCenter(center);
+    setOccupancyUpdate({
+      current_occupancy: 0,
+      action: 'set'
+    });
+    setShowOccupancyModal(true);
   };
 
   if (loading) {
@@ -203,7 +288,7 @@ const CentersManagement = ({ refreshTrigger }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
         <div>
           <h2>Evacuation Centers</h2>
-          <p style={{ color: 'var(--gray-dark)' }}>Manage all evacuation centers and their status</p>
+          <p style={{ color: 'var(--gray-dark)' }}>Manage all evacuation centers, occupancy, and status</p>
         </div>
         <button
           onClick={() => openModal()}
@@ -216,166 +301,221 @@ const CentersManagement = ({ refreshTrigger }) => {
 
       <div className="centers-grid" style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
         gap: '20px' 
       }}>
-        {centers.map((center) => (
-          <div 
-            key={center.center_id} 
-            className="center-card safe-center"
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              padding: '18px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              transition: 'transform 0.2s'
-            }}
-          >
-            <div className="center-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <div className="center-icon" style={{ 
-                width: '55px', 
-                height: '55px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                backgroundColor: '#f5f5f5',
-                borderRadius: '12px'
-              }}>
-                {getCenterIcon(center.center_name)}
-              </div>
-              <span 
-                className={`status-badge ${center.status === 'Open' ? 'open' : center.status === 'Full' ? 'full' : 'closed'}`}
-                style={{
-                  padding: '4px 12px',
-                  borderRadius: '20px',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
-                  backgroundColor: getStatusColor(center.status),
-                  color: 'white'
-                }}
-              >
-                {center.status || 'Open'}
-              </span>
-            </div>
-            
-            <h4 style={{ margin: '10px 0 5px 0', fontSize: '1rem', fontWeight: 'bold' }}>{center.center_name}</h4>
-            
-            <div className="center-address" style={{ fontSize: '12px', color: '#666', display: 'flex', alignItems: 'flex-start', gap: '5px', marginBottom: '8px' }}>
-              <MdLocationOn size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
-              <span>{center.address}</span>
-            </div>
-            
-            {center.contact_number && (
-              <div style={{ margin: '8px 0', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MdPhone size={14} color="#2196f3" />
-                <span>{center.contact_number}</span>
-              </div>
-            )}
-            
-            <div className="center-capacity" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', marginBottom: '8px' }}>
-              <MdGroup size={14} color="#4caf50" />
-              <span>{center.current_occupancy || 0} / {center.capacity || 0} occupants</span>
-            </div>
-            
-            {/* Display plus code if available */}
-            {center.plus_code && (
-              <div style={{ margin: '8px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <MdLocationOn size={12} />
-                <span>Plus Code: {center.plus_code}</span>
-              </div>
-            )}
-            
-            {/* Map Buttons */}
-            {(center.latitude || center.address || center.plus_code) && (
-              <div style={{ 
-                marginTop: '15px', 
-                display: 'flex', 
-                gap: '10px',
-                paddingTop: '10px',
-                borderTop: '1px solid #e9ecef'
-              }}>
-                <button
-                  onClick={() => openGoogleMaps(center)}
+        {centers.map((center) => {
+          const occupancyRate = center.capacity > 0 
+            ? ((center.current_occupancy || 0) / center.capacity) * 100 
+            : 0;
+          const rateColor = getOccupancyRateColor(center.current_occupancy || 0, center.capacity);
+          
+          return (
+            <div 
+              key={center.center_id} 
+              className="center-card safe-center"
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                padding: '18px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'transform 0.2s'
+              }}
+            >
+              <div className="center-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div className="center-icon" style={{ 
+                  width: '55px', 
+                  height: '55px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: '12px'
+                }}>
+                  {getCenterIcon(center.center_name)}
+                </div>
+                <span 
+                  className={`status-badge ${center.status === 'Open' ? 'open' : center.status === 'Full' ? 'full' : 'closed'}`}
                   style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    padding: '8px',
-                    background: '#4285f4',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: '500'
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    backgroundColor: getStatusColor(center.status),
+                    color: 'white'
                   }}
                 >
-                  <FaGoogle size={14} /> Google Maps
-                </button>
+                  {center.status || 'Open'}
+                </span>
+              </div>
+              
+              <h4 style={{ margin: '10px 0 5px 0', fontSize: '1rem', fontWeight: 'bold' }}>{center.center_name}</h4>
+              
+              <div className="center-address" style={{ fontSize: '12px', color: '#666', display: 'flex', alignItems: 'flex-start', gap: '5px', marginBottom: '8px' }}>
+                <MdLocationOn size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>{center.address}</span>
+              </div>
+              
+              {center.contact_number && (
+                <div style={{ margin: '8px 0', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <MdPhone size={14} color="#2196f3" />
+                  <span>{center.contact_number}</span>
+                </div>
+              )}
+              
+              {/* ✅ IMPROVED OCCUPANCY DISPLAY WITH PROGRESS BAR */}
+              <div style={{ margin: '12px 0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <MdGroup size={14} color="#4caf50" />
+                    <span style={{ fontSize: '13px', fontWeight: '500' }}>
+                      Occupancy: {center.current_occupancy || 0} / {center.capacity || 0}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: rateColor }}>
+                    {occupancyRate.toFixed(1)}%
+                  </span>
+                </div>
+                <div style={{
+                  width: '100%',
+                  height: '8px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${Math.min(occupancyRate, 100)}%`,
+                    height: '100%',
+                    backgroundColor: rateColor,
+                    transition: 'width 0.3s ease'
+                  }} />
+                </div>
+              </div>
+              
+              {/* ✅ NEW: Quick Occupancy Update Button */}
+              <button
+                onClick={() => openOccupancyModal(center)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  padding: '8px',
+                  backgroundColor: '#e3f2fd',
+                  color: '#1976d2',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  marginTop: '10px'
+                }}
+              >
+                <MdPeople size={14} />
+                Update Occupancy Count
+              </button>
+              
+              {/* Display plus code if available */}
+              {center.plus_code && (
+                <div style={{ margin: '8px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <MdLocationOn size={12} />
+                  <span>Plus Code: {center.plus_code}</span>
+                </div>
+              )}
+              
+              {/* Map Buttons */}
+              {(center.latitude || center.address || center.plus_code) && (
+                <div style={{ 
+                  marginTop: '15px', 
+                  display: 'flex', 
+                  gap: '10px',
+                  paddingTop: '10px',
+                  borderTop: '1px solid #e9ecef'
+                }}>
+                  <button
+                    onClick={() => openGoogleMaps(center)}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      padding: '8px',
+                      background: '#4285f4',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    <FaGoogle size={14} /> Google Maps
+                  </button>
+                  <button
+                    onClick={() => openWaze(center)}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      padding: '8px',
+                      background: '#33ccff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    <FaWaze size={14} /> Waze
+                  </button>
+                </div>
+              )}
+              
+              {/* Action Buttons */}
+              <div style={{ marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <button
-                  onClick={() => openWaze(center)}
+                  onClick={() => openModal(center)}
                   style={{
-                    flex: 1,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    padding: '8px',
-                    background: '#33ccff',
+                    gap: '5px',
+                    padding: '6px 12px',
+                    backgroundColor: '#2196f3',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '8px',
+                    borderRadius: '6px',
                     cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: '500'
+                    fontSize: '12px'
                   }}
                 >
-                  <FaWaze size={14} /> Waze
+                  <MdEdit size={14} /> Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(center.center_id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    padding: '6px 12px',
+                    backgroundColor: '#f44336',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  <MdDelete size={14} /> Delete
                 </button>
               </div>
-            )}
-            
-            {/* Action Buttons */}
-            <div style={{ marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => openModal(center)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  padding: '6px 12px',
-                  backgroundColor: '#2196f3',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '12px'
-                }}
-              >
-                <MdEdit size={14} /> Edit
-              </button>
-              <button
-                onClick={() => handleDelete(center.center_id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  padding: '6px 12px',
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '12px'
-                }}
-              >
-                <MdDelete size={14} /> Delete
-              </button>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {centers.length === 0 && (
@@ -389,9 +529,10 @@ const CentersManagement = ({ refreshTrigger }) => {
         </div>
       )}
 
+      {/* Add/Edit Center Modal */}
       {showModal && (
         <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px', width: '90%' }}>
             <div className="admin-modal-header">
               <h3>{editingCenter ? 'Edit Center' : 'Add New Center'}</h3>
               <button className="admin-modal-close" onClick={() => setShowModal(false)}>×</button>
@@ -467,6 +608,22 @@ const CentersManagement = ({ refreshTrigger }) => {
                     />
                   </div>
                   <div className="admin-form-group">
+                    <label className="admin-form-label">Current Occupancy *</label>
+                    <input
+                      type="number"
+                      required
+                      className="admin-form-input"
+                      value={formData.current_occupancy}
+                      onChange={(e) => setFormData({ ...formData, current_occupancy: e.target.value })}
+                    />
+                    <small style={{ color: '#666', fontSize: '11px' }}>
+                      Current number of evacuees in this center
+                    </small>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                  <div className="admin-form-group">
                     <label className="admin-form-label">Contact Number</label>
                     <input
                       type="text"
@@ -475,19 +632,18 @@ const CentersManagement = ({ refreshTrigger }) => {
                       onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })}
                     />
                   </div>
-                </div>
-                
-                <div className="admin-form-group">
-                  <label className="admin-form-label">Status</label>
-                  <select
-                    className="admin-form-input"
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  >
-                    <option value="Open">Open</option>
-                    <option value="Closed">Closed</option>
-                    <option value="Full">Full</option>
-                  </select>
+                  <div className="admin-form-group">
+                    <label className="admin-form-label">Status</label>
+                    <select
+                      className="admin-form-input"
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    >
+                      <option value="Open">Open</option>
+                      <option value="Closed">Closed</option>
+                      <option value="Full">Full</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div className="admin-modal-footer">
@@ -499,6 +655,82 @@ const CentersManagement = ({ refreshTrigger }) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ NEW: Quick Occupancy Update Modal */}
+      {showOccupancyModal && selectedCenter && (
+        <div className="admin-modal-overlay" onClick={() => setShowOccupancyModal(false)}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <div className="admin-modal-header">
+              <h3>Update Occupancy - {selectedCenter.center_name}</h3>
+              <button className="admin-modal-close" onClick={() => setShowOccupancyModal(false)}>×</button>
+            </div>
+            <div className="admin-modal-body">
+              <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f0f9ff', borderRadius: '8px' }}>
+                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>Current Status:</div>
+                <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                  {selectedCenter.current_occupancy || 0} / {selectedCenter.capacity || 0}
+                </div>
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                  Remaining capacity: {(selectedCenter.capacity || 0) - (selectedCenter.current_occupancy || 0)}
+                </div>
+              </div>
+
+              <div className="admin-form-group">
+                <label className="admin-form-label">Update Method</label>
+                <select
+                  className="admin-form-input"
+                  value={occupancyUpdate.action}
+                  onChange={(e) => setOccupancyUpdate({ ...occupancyUpdate, action: e.target.value, current_occupancy: 0 })}
+                  style={{ marginBottom: '15px' }}
+                >
+                  <option value="set">Set exact number</option>
+                  <option value="add">Add evacuees (+)</option>
+                  <option value="subtract">Remove evacuees (-)</option>
+                </select>
+              </div>
+
+              <div className="admin-form-group">
+                <label className="admin-form-label">
+                  {occupancyUpdate.action === 'add' && 'Number of evacuees to ADD'}
+                  {occupancyUpdate.action === 'subtract' && 'Number of evacuees to REMOVE'}
+                  {occupancyUpdate.action === 'set' && 'New total occupancy'}
+                </label>
+                <input
+                  type="number"
+                  className="admin-form-input"
+                  value={occupancyUpdate.current_occupancy}
+                  onChange={(e) => setOccupancyUpdate({ ...occupancyUpdate, current_occupancy: parseInt(e.target.value) || 0 })}
+                  placeholder="Enter number..."
+                  autoFocus
+                />
+                {occupancyUpdate.action === 'add' && (
+                  <small style={{ color: '#666', fontSize: '11px' }}>
+                    New total will be: {(selectedCenter.current_occupancy || 0) + occupancyUpdate.current_occupancy}
+                  </small>
+                )}
+                {occupancyUpdate.action === 'subtract' && (
+                  <small style={{ color: '#666', fontSize: '11px' }}>
+                    New total will be: {(selectedCenter.current_occupancy || 0) - occupancyUpdate.current_occupancy}
+                  </small>
+                )}
+              </div>
+            </div>
+            <div className="admin-modal-footer">
+              <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setShowOccupancyModal(false)}>
+                Cancel
+              </button>
+              <button 
+                type="button" 
+                className="admin-btn admin-btn-primary" 
+                onClick={handleQuickOccupancyUpdate}
+                style={{ backgroundColor: '#1976d2' }}
+              >
+                Update Occupancy
+              </button>
+            </div>
           </div>
         </div>
       )}

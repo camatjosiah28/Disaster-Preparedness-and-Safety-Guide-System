@@ -13,6 +13,7 @@ import UserProfile from './components/profile/UserProfile';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import CentersManagement from './components/admin/CentersManagement';
+import BarangayPopulationManager from './components/admin/BarangayPopulationManager'; // ✅ IMPORT ITO
 import AlertsManagement from './components/admin/AlertsManagement';
 import PWDManagement from './components/admin/PWDManagement';
 import EmergencyContactsManagement from './components/admin/EmergencyContactsManagement';
@@ -152,6 +153,7 @@ function AppContent() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="centers" element={<CentersManagement />} />
+          <Route path="population" element={<BarangayPopulationManager />} />  {/* ✅ IDAGDAG ITO */}
           <Route path="alerts" element={<AlertsManagement />} />
           <Route path="pwd" element={<PWDManagement />} />
           <Route path="contacts" element={<EmergencyContactsManagement />} />

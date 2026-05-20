@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import AdminNavbar from './AdminNavbar';
 import AdminSidebar from './AdminSidebar';
@@ -12,8 +12,11 @@ const AdminLayout = () => {
 
   const getActiveTabFromPath = () => {
     const path = location.pathname;
+    console.log('Current path:', path); // Para ma-debug mo
+    
     if (path === '/admin') return 'dashboard';
     if (path.includes('/admin/centers')) return 'centers';
+    if (path.includes('/admin/population')) return 'population';  // ✅ IDAGDAG ITO - PINAKAIMPORTANTE
     if (path.includes('/admin/alerts')) return 'alerts';
     if (path.includes('/admin/pwd')) return 'pwd';
     if (path.includes('/admin/contacts')) return 'contacts';
@@ -24,6 +27,12 @@ const AdminLayout = () => {
 
   const [activeTab, setActiveTab] = useState(getActiveTabFromPath());
 
+  // ✅ IMPORTANTE: Panoorin ang location changes at i-update ang activeTab
+  useEffect(() => {
+    const newActiveTab = getActiveTabFromPath();
+    setActiveTab(newActiveTab);
+  }, [location.pathname]); // Magre-run every time nag-change ang URL
+
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     switch(tabId) {
@@ -32,6 +41,9 @@ const AdminLayout = () => {
         break;
       case 'centers':
         navigate('/admin/centers');
+        break;
+      case 'population':   // ✅ IDAGDAG ITO
+        navigate('/admin/population');
         break;
       case 'alerts':
         navigate('/admin/alerts');
