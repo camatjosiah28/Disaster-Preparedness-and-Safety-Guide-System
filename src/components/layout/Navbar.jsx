@@ -13,7 +13,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
     await logout();
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -24,7 +23,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Get user display name with fallback
   const getDisplayName = () => {
     if (userProfile?.full_name) {
       const firstName = userProfile.full_name.split(' ')[0];
@@ -36,7 +34,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
     return 'User';
   };
 
-  // Get user role badge
   const getUserRoleBadge = () => {
     if (userProfile?.role === 'admin') {
       return { text: 'Admin', color: '#f97316', icon: Shield };
@@ -54,7 +51,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
     logoSrc = null;
   }
 
-  // Navigation items
   const navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'maps', label: 'Evacuation Maps', icon: Map },
@@ -67,13 +63,13 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
       position: 'sticky',
       top: 0,
       zIndex: 1000,
-      background: '#1a1a2e',
+      background: '#0f0f1a',
       padding: '0 24px',
       height: '64px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+      boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
     }}>
       {/* Logo */}
       <div onClick={() => setView('guest')} style={{
@@ -97,7 +93,7 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
           <span style={{ marginRight: '10px', fontSize: '24px' }}>🏠</span>
         )}
         <span style={{ color: 'white' }}>Alapan</span>
-        <span style={{ color: '#ff6b35' }}>Ready</span>
+        <span style={{ color: '#f97316' }}>Ready</span>
       </div>
 
       {/* Navigation Links */}
@@ -123,21 +119,21 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                 borderRadius: '8px',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                background: isActive ? '#ff6b35' : 'transparent',
-                color: isActive ? 'white' : '#e0e0e0',
-                fontWeight: isActive ? '600' : '400',
+                background: isActive ? '#2a2a3e' : 'transparent',
+                color: isActive ? '#f97316' : '#a0a0b0',
+                fontWeight: isActive ? '500' : '400',
                 fontSize: '0.9rem'
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.background = '#2a2a4a';
-                  e.currentTarget.style.color = '#ff6b35';
+                  e.currentTarget.style.background = '#1a1a2e';
+                  e.currentTarget.style.color = '#f97316';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive) {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#e0e0e0';
+                  e.currentTarget.style.color = '#a0a0b0';
                 }
               }}
             >
@@ -160,18 +156,18 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                 gap: '10px',
                 padding: '4px 12px 4px 6px',
                 borderRadius: '40px',
-                border: '1px solid #2a2a4a',
-                background: '#2a2a4a',
+                border: '1px solid #2a2a3e',
+                background: '#1a1a2e',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#ff6b35';
-                e.currentTarget.style.background = '#2a2a4a';
+                e.currentTarget.style.borderColor = '#f97316';
+                e.currentTarget.style.background = '#222236';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#2a2a4a';
-                e.currentTarget.style.background = '#2a2a4a';
+                e.currentTarget.style.borderColor = '#2a2a3e';
+                e.currentTarget.style.background = '#1a1a2e';
               }}
             >
               {/* Avatar */}
@@ -179,7 +175,7 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                 width: '32px',
                 height: '32px',
                 borderRadius: '50%',
-                background: '#ff6b35',
+                background: '#f97316',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -195,7 +191,7 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                 <div style={{ 
                   fontSize: '13px', 
                   fontWeight: '500', 
-                  color: 'white',
+                  color: '#e0e0e0',
                   lineHeight: '1.2'
                 }}>
                   Hi, {getDisplayName()}!
@@ -215,7 +211,7 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
               <ChevronDown 
                 size={14} 
                 style={{ 
-                  color: '#9ca3af',
+                  color: '#6b7280',
                   transform: isDropdownOpen ? 'rotate(180deg)' : 'none',
                   transition: 'transform 0.2s ease'
                 }} 
@@ -229,23 +225,23 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                 top: 'calc(100% + 8px)',
                 right: 0,
                 width: '220px',
-                background: 'white',
+                background: '#1a1a2e',
                 borderRadius: '12px',
-                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.02)',
-                border: '1px solid #e5e7eb',
+                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.1)',
+                border: '1px solid #2a2a3e',
                 overflow: 'hidden',
                 zIndex: 1001
               }}>
                 {/* User info header */}
                 <div style={{
                   padding: '12px 16px',
-                  borderBottom: '1px solid #f1f5f9',
-                  background: '#fafbfc'
+                  borderBottom: '1px solid #2a2a3e',
+                  background: '#0f0f1a'
                 }}>
-                  <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                  <div style={{ fontWeight: '600', color: 'white' }}>
                     {userProfile?.full_name || user?.email}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                  <div style={{ fontSize: '11px', color: '#8b8b9b', marginTop: '2px' }}>
                     {user?.email}
                   </div>
                 </div>
@@ -264,12 +260,12 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                     cursor: 'pointer',
                     transition: 'background 0.2s ease',
                     fontSize: '13px',
-                    color: '#4b5563'
+                    color: '#d0d0e0'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#fef2f2'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#2a2a3e'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 >
-                  <UserCircle size={16} color="#6b7280" />
+                  <UserCircle size={16} color="#8b8b9b" />
                   My Profile
                 </div>
 
@@ -284,11 +280,11 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                     cursor: 'pointer',
                     transition: 'background 0.2s ease',
                     fontSize: '13px',
-                    color: '#dc2626',
-                    borderTop: '1px solid #f1f5f9'
+                    color: '#f97316',
+                    borderTop: '1px solid #2a2a3e'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#fef2f2'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#2a2a3e'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 >
                   <LogOut size={16} />
                   Logout
@@ -300,18 +296,24 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
           <button 
             onClick={() => setView('login')}
             style={{
-              background: '#ff6b35',
-              color: 'white',
-              border: 'none',
+              background: '#2a2a3e',
+              color: '#f97316',
+              border: '1px solid #3a3a4e',
               padding: '8px 20px',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontWeight: '600',
+              fontWeight: '500',
               fontSize: '14px',
               transition: 'all 0.2s ease'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.background = '#e55a2b'}
-            onMouseLeave={(e) => e.currentTarget.style.background = '#ff6b35'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#3a3a4e';
+              e.currentTarget.style.color = '#ff8c42';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#2a2a3e';
+              e.currentTarget.style.color = '#f97316';
+            }}
           >
             Login / Register
           </button>
