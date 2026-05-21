@@ -13,7 +13,7 @@ const CentersManagement = ({ refreshTrigger }) => {
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [occupancyUpdate, setOccupancyUpdate] = useState({
     current_occupancy: 0,
-    action: 'set' // 'set', 'add', 'subtract'
+    action: 'set'
   });
   const [formData, setFormData] = useState({
     center_name: '',
@@ -21,7 +21,7 @@ const CentersManagement = ({ refreshTrigger }) => {
     latitude: '',
     longitude: '',
     capacity: '',
-    current_occupancy: 0,  // ✅ IDINAGDAG KO ITO
+    current_occupancy: 0,
     contact_number: '',
     status: 'Open',
     plus_code: ''
@@ -48,7 +48,6 @@ const CentersManagement = ({ refreshTrigger }) => {
     fetchCenters();
   }, [fetchCenters, refreshTrigger]);
 
-  // Get icon based on center name
   const getCenterIcon = (centerName) => {
     const name = centerName?.toLowerCase() || '';
     
@@ -64,7 +63,6 @@ const CentersManagement = ({ refreshTrigger }) => {
     return <MdShield size={28} color="#f44336" />;
   };
 
-  // Get status color
   const getStatusColor = (status) => {
     switch(status?.toLowerCase()) {
       case 'open': return '#4caf50';
@@ -74,12 +72,11 @@ const CentersManagement = ({ refreshTrigger }) => {
     }
   };
 
-  // Get occupancy rate color
   const getOccupancyRateColor = (current, capacity) => {
     const rate = capacity > 0 ? (current / capacity) * 100 : 0;
-    if (rate >= 90) return '#ef4444'; // Red - Critical
-    if (rate >= 70) return '#f59e0b'; // Orange - Warning
-    return '#10b981'; // Green - Safe
+    if (rate >= 90) return '#ef4444';
+    if (rate >= 70) return '#f59e0b';
+    return '#10b981';
   };
 
   const openGoogleMaps = (center) => {
@@ -111,7 +108,6 @@ const CentersManagement = ({ refreshTrigger }) => {
     }
   };
 
-  // ✅ NEW: Quick update occupancy function
   const handleQuickOccupancyUpdate = async () => {
     if (!selectedCenter) return;
     
@@ -128,7 +124,6 @@ const CentersManagement = ({ refreshTrigger }) => {
         newOccupancy = occupancyUpdate.current_occupancy;
     }
     
-    // Validate
     if (newOccupancy < 0) {
       alert('Occupancy cannot be negative!');
       return;
@@ -145,7 +140,6 @@ const CentersManagement = ({ refreshTrigger }) => {
         .from('evacuation_centers')
         .update({ 
           current_occupancy: newOccupancy,
-          // Auto-update status based on occupancy
           status: newOccupancy >= selectedCenter.capacity ? 'Full' : 'Open'
         })
         .eq('center_id', selectedCenter.center_id);
@@ -175,13 +169,12 @@ const CentersManagement = ({ refreshTrigger }) => {
         latitude: formData.latitude || null,
         longitude: formData.longitude || null,
         capacity: formData.capacity ? parseInt(formData.capacity) : null,
-        current_occupancy: formData.current_occupancy ? parseInt(formData.current_occupancy) : 0, // ✅ IDINAGDAG KO ITO
+        current_occupancy: formData.current_occupancy ? parseInt(formData.current_occupancy) : 0,
         contact_number: formData.contact_number || null,
         status: formData.status,
         plus_code: formData.plus_code || null
       };
 
-      // Auto-set status to Full if occupancy equals or exceeds capacity
       if (centerData.current_occupancy >= centerData.capacity) {
         centerData.status = 'Full';
       }
@@ -239,7 +232,7 @@ const CentersManagement = ({ refreshTrigger }) => {
       latitude: '',
       longitude: '',
       capacity: '',
-      current_occupancy: 0, // ✅ IDINAGDAG KO ITO
+      current_occupancy: 0,
       contact_number: '',
       status: 'Open',
       plus_code: ''
@@ -255,7 +248,7 @@ const CentersManagement = ({ refreshTrigger }) => {
         latitude: center.latitude || '',
         longitude: center.longitude || '',
         capacity: center.capacity || '',
-        current_occupancy: center.current_occupancy || 0, // ✅ IDINAGDAG KO ITO
+        current_occupancy: center.current_occupancy || 0,
         contact_number: center.contact_number || '',
         status: center.status || 'Open',
         plus_code: center.plus_code || ''
@@ -284,8 +277,16 @@ const CentersManagement = ({ refreshTrigger }) => {
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+    <div className="centers-management-container" style={{ padding: '0 16px' }}>
+      {/* Header - Responsive */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '25px',
+        flexWrap: 'wrap',
+        gap: '16px'
+      }}>
         <div>
           <h2>Evacuation Centers</h2>
           <p style={{ color: 'var(--gray-dark)' }}>Manage all evacuation centers, occupancy, and status</p>
@@ -293,12 +294,18 @@ const CentersManagement = ({ refreshTrigger }) => {
         <button
           onClick={() => openModal()}
           className="admin-btn admin-btn-primary"
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            minHeight: '44px'
+          }}
         >
           <MdAdd size={18} /> Add New Center
         </button>
       </div>
 
+      {/* Centers Grid - Responsive */}
       <div className="centers-grid" style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
@@ -322,7 +329,7 @@ const CentersManagement = ({ refreshTrigger }) => {
                 transition: 'transform 0.2s'
               }}
             >
-              <div className="center-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div className="center-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
                 <div className="center-icon" style={{ 
                   width: '55px', 
                   height: '55px', 
@@ -357,15 +364,15 @@ const CentersManagement = ({ refreshTrigger }) => {
               </div>
               
               {center.contact_number && (
-                <div style={{ margin: '8px 0', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ margin: '8px 0', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <MdPhone size={14} color="#2196f3" />
                   <span>{center.contact_number}</span>
                 </div>
               )}
               
-              {/* ✅ IMPROVED OCCUPANCY DISPLAY WITH PROGRESS BAR */}
+              {/* Occupancy Display with Progress Bar */}
               <div style={{ margin: '12px 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px', flexWrap: 'wrap', gap: '5px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <MdGroup size={14} color="#4caf50" />
                     <span style={{ fontSize: '13px', fontWeight: '500' }}>
@@ -392,7 +399,7 @@ const CentersManagement = ({ refreshTrigger }) => {
                 </div>
               </div>
               
-              {/* ✅ NEW: Quick Occupancy Update Button */}
+              {/* Quick Occupancy Update Button */}
               <button
                 onClick={() => openOccupancyModal(center)}
                 style={{
@@ -409,29 +416,30 @@ const CentersManagement = ({ refreshTrigger }) => {
                   cursor: 'pointer',
                   fontSize: '12px',
                   fontWeight: '500',
-                  marginTop: '10px'
+                  marginTop: '10px',
+                  minHeight: '40px'
                 }}
               >
                 <MdPeople size={14} />
                 Update Occupancy Count
               </button>
               
-              {/* Display plus code if available */}
               {center.plus_code && (
-                <div style={{ margin: '8px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ margin: '8px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
                   <MdLocationOn size={12} />
                   <span>Plus Code: {center.plus_code}</span>
                 </div>
               )}
               
-              {/* Map Buttons */}
+              {/* Map Buttons - Responsive */}
               {(center.latitude || center.address || center.plus_code) && (
                 <div style={{ 
                   marginTop: '15px', 
                   display: 'flex', 
                   gap: '10px',
                   paddingTop: '10px',
-                  borderTop: '1px solid #e9ecef'
+                  borderTop: '1px solid #e9ecef',
+                  flexWrap: 'wrap'
                 }}>
                   <button
                     onClick={() => openGoogleMaps(center)}
@@ -448,7 +456,8 @@ const CentersManagement = ({ refreshTrigger }) => {
                       borderRadius: '8px',
                       cursor: 'pointer',
                       fontSize: '12px',
-                      fontWeight: '500'
+                      fontWeight: '500',
+                      minHeight: '40px'
                     }}
                   >
                     <FaGoogle size={14} /> Google Maps
@@ -468,7 +477,8 @@ const CentersManagement = ({ refreshTrigger }) => {
                       borderRadius: '8px',
                       cursor: 'pointer',
                       fontSize: '12px',
-                      fontWeight: '500'
+                      fontWeight: '500',
+                      minHeight: '40px'
                     }}
                   >
                     <FaWaze size={14} /> Waze
@@ -476,8 +486,8 @@ const CentersManagement = ({ refreshTrigger }) => {
                 </div>
               )}
               
-              {/* Action Buttons */}
-              <div style={{ marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              {/* Action Buttons - Responsive */}
+              <div style={{ marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => openModal(center)}
                   style={{
@@ -490,7 +500,8 @@ const CentersManagement = ({ refreshTrigger }) => {
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    minHeight: '36px'
                   }}
                 >
                   <MdEdit size={14} /> Edit
@@ -507,7 +518,8 @@ const CentersManagement = ({ refreshTrigger }) => {
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    minHeight: '36px'
                   }}
                 >
                   <MdDelete size={14} /> Delete
@@ -529,10 +541,15 @@ const CentersManagement = ({ refreshTrigger }) => {
         </div>
       )}
 
-      {/* Add/Edit Center Modal */}
+      {/* Add/Edit Center Modal - Responsive */}
       {showModal && (
         <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px', width: '90%' }}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ 
+            maxWidth: '600px', 
+            width: '90%',
+            maxHeight: '90vh',
+            overflow: 'auto'
+          }}>
             <div className="admin-modal-header">
               <h3>{editingCenter ? 'Edit Center' : 'Add New Center'}</h3>
               <button className="admin-modal-close" onClick={() => setShowModal(false)}>×</button>
@@ -646,7 +663,12 @@ const CentersManagement = ({ refreshTrigger }) => {
                   </div>
                 </div>
               </div>
-              <div className="admin-modal-footer">
+              <div className="admin-modal-footer" style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'flex-end',
+                flexWrap: 'wrap'
+              }}>
                 <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setShowModal(false)}>
                   Cancel
                 </button>
@@ -659,10 +681,14 @@ const CentersManagement = ({ refreshTrigger }) => {
         </div>
       )}
 
-      {/* ✅ NEW: Quick Occupancy Update Modal */}
+      {/* Quick Occupancy Update Modal - Responsive */}
       {showOccupancyModal && selectedCenter && (
         <div className="admin-modal-overlay" onClick={() => setShowOccupancyModal(false)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ 
+            maxWidth: '400px',
+            width: '90%',
+            margin: '16px'
+          }}>
             <div className="admin-modal-header">
               <h3>Update Occupancy - {selectedCenter.center_name}</h3>
               <button className="admin-modal-close" onClick={() => setShowOccupancyModal(false)}>×</button>
@@ -705,6 +731,7 @@ const CentersManagement = ({ refreshTrigger }) => {
                   onChange={(e) => setOccupancyUpdate({ ...occupancyUpdate, current_occupancy: parseInt(e.target.value) || 0 })}
                   placeholder="Enter number..."
                   autoFocus
+                  style={{ fontSize: '16px' }}
                 />
                 {occupancyUpdate.action === 'add' && (
                   <small style={{ color: '#666', fontSize: '11px' }}>
@@ -718,7 +745,12 @@ const CentersManagement = ({ refreshTrigger }) => {
                 )}
               </div>
             </div>
-            <div className="admin-modal-footer">
+            <div className="admin-modal-footer" style={{
+              display: 'flex',
+              gap: '12px',
+              justifyContent: 'flex-end',
+              flexWrap: 'wrap'
+            }}>
               <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setShowOccupancyModal(false)}>
                 Cancel
               </button>
@@ -726,7 +758,7 @@ const CentersManagement = ({ refreshTrigger }) => {
                 type="button" 
                 className="admin-btn admin-btn-primary" 
                 onClick={handleQuickOccupancyUpdate}
-                style={{ backgroundColor: '#1976d2' }}
+                style={{ backgroundColor: '#1976d2', minHeight: '44px' }}
               >
                 Update Occupancy
               </button>

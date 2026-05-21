@@ -107,8 +107,16 @@ const AlertsManagement = () => {
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+    <div className="alerts-management-container">
+      {/* Header - Responsive */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '25px',
+        flexWrap: 'wrap',
+        gap: '16px'
+      }}>
         <div>
           <h2>Alerts Management</h2>
           <p style={{ color: 'var(--gray-dark)' }}>Create and manage emergency alerts</p>
@@ -119,53 +127,82 @@ const AlertsManagement = () => {
             setShowModal(true);
           }}
           className="admin-btn admin-btn-primary"
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            minHeight: '44px'
+          }}
         >
           <Plus size={18} /> Send Alert
         </button>
       </div>
 
-      {alerts.map((alert) => (
-        <div key={alert.alert_id} className={`alert-card ${getAlertTypeClass(alert.alert_type)}`}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ flex: 1 }}>
-              <div className="alert-badge weather">{alert.alert_type}</div>
-              <h3 style={{ margin: '10px 0' }}>{alert.title}</h3>
-              <p>{alert.message}</p>
-              <small>Created: {new Date(alert.created_at).toLocaleString()}</small>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <span className={`admin-status ${alert.status === 'Active' ? 'admin-status-active' : 'admin-status-inactive'}`}>
-                {alert.status}
-              </span>
-              <button
-                onClick={() => {
-                  setEditingAlert(alert);
-                  setFormData(alert);
-                  setShowModal(true);
-                }}
-                className="admin-action-icon edit"
-              >
-                <Edit size={18} />
-              </button>
-              <button
-                onClick={() => handleDelete(alert.alert_id)}
-                className="admin-action-icon delete"
-              >
-                <Trash2 size={18} />
-              </button>
+      {/* Alerts List - Responsive */}
+      <div className="alerts-list">
+        {alerts.map((alert) => (
+          <div key={alert.alert_id} className={`alert-card ${getAlertTypeClass(alert.alert_type)}`} style={{
+            marginBottom: '16px',
+            borderRadius: '8px'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'flex-start',
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}>
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <div className="alert-badge weather">{alert.alert_type}</div>
+                <h3 style={{ margin: '10px 0' }}>{alert.title}</h3>
+                <p>{alert.message}</p>
+                <small>Created: {new Date(alert.created_at).toLocaleString()}</small>
+              </div>
+              <div style={{ 
+                display: 'flex', 
+                gap: '10px',
+                alignItems: 'center',
+                flexWrap: 'wrap'
+              }}>
+                <span className={`admin-status ${alert.status === 'Active' ? 'admin-status-active' : 'admin-status-inactive'}`}>
+                  {alert.status}
+                </span>
+                <button
+                  onClick={() => {
+                    setEditingAlert(alert);
+                    setFormData(alert);
+                    setShowModal(true);
+                  }}
+                  className="admin-action-icon edit"
+                  style={{ minHeight: '36px', minWidth: '36px' }}
+                >
+                  <Edit size={18} />
+                </button>
+                <button
+                  onClick={() => handleDelete(alert.alert_id)}
+                  className="admin-action-icon delete"
+                  style={{ minHeight: '36px', minWidth: '36px' }}
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {alerts.length === 0 && (
         <div className="no-data">No alerts found. Create your first alert!</div>
       )}
 
+      {/* Modal - Responsive */}
       {showModal && (
         <div className="admin-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{
+            width: '90%',
+            maxWidth: '500px',
+            margin: '20px'
+          }}>
             <div className="admin-modal-header">
               <h3>{editingAlert ? 'Edit Alert' : 'Send New Alert'}</h3>
               <button className="admin-modal-close" onClick={() => setShowModal(false)}>×</button>
@@ -220,7 +257,12 @@ const AlertsManagement = () => {
                   </select>
                 </div>
               </div>
-              <div className="admin-modal-footer">
+              <div className="admin-modal-footer" style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'flex-end',
+                flexWrap: 'wrap'
+              }}>
                 <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setShowModal(false)}>
                   Cancel
                 </button>

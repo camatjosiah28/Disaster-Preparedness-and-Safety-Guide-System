@@ -37,7 +37,6 @@ function ZoomController({ center, mapRef }) {
   
   useEffect(() => {
     if (center && center.latitude && center.longitude && map) {
-      // Use flyTo for smooth animation - this doesn't cause shaking
       map.flyTo([center.latitude, center.longitude], 15, {
         duration: 1,
         easeLinearity: 0.5
@@ -63,7 +62,7 @@ const EvacuationMap = ({ refreshTrigger }) => {
         .order('center_name');
       
       if (error) throw error;
-      console.log('Fetched centers:', data); // Para ma-verify kung may plus_code
+      console.log('Fetched centers:', data);
       setCenters(data || []);
     } catch (error) {
       console.error('Error fetching centers:', error);
@@ -76,26 +75,21 @@ const EvacuationMap = ({ refreshTrigger }) => {
     fetchCenters();
   }, [fetchCenters, refreshTrigger]);
 
-  // UPDATED: Open Google Maps gamit ang plus_code para exact location
   const openGoogleMaps = (center) => {
     let searchQuery = '';
     
-    // Priority: Gamitin ang plus_code mula sa database
     if (center.plus_code) {
       searchQuery = center.plus_code;
       console.log('Opening with plus_code:', searchQuery);
     } 
-    // Second: Gamitin ang address
     else if (center.address) {
       searchQuery = center.address;
       console.log('Opening with address:', searchQuery);
     }
-    // Last resort: coordinates
     else if (center.latitude && center.longitude) {
       searchQuery = `${center.latitude},${center.longitude}`;
       console.log('Opening with coordinates:', searchQuery);
     }
-    // Default: center name
     else {
       searchQuery = center.center_name;
       console.log('Opening with center name:', searchQuery);
@@ -105,12 +99,10 @@ const EvacuationMap = ({ refreshTrigger }) => {
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
   };
 
-  // Function to zoom to a specific center
   const zoomToCenter = (center) => {
     setSelectedCenter(center);
   };
 
-  // Get icon for center type
   const getCenterIcon = (centerName) => {
     const name = centerName?.toLowerCase() || '';
     
@@ -126,7 +118,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
     return <MdShield size={24} color="#f44336" />;
   };
 
-  // Get status color
   const getStatusColor = (status) => {
     switch(status?.toLowerCase()) {
       case 'open': return '#4caf50';
@@ -141,9 +132,9 @@ const EvacuationMap = ({ refreshTrigger }) => {
   }
 
   return (
-    <div>
-      {/* Map Container */}
-      <div className="map-wrapper" style={{ height: '400px', marginBottom: '30px' }}>
+    <div className="evacuation-map-container">
+      {/* Map Container - Responsive height */}
+      <div className="map-wrapper" style={{ marginBottom: '30px' }}>
         <MapContainer 
           center={[14.4190, 120.9350]} 
           zoom={13} 
@@ -216,7 +207,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
             )
           ))}
           
-          {/* Zoom controller */}
           {selectedCenter && (
             <ZoomController center={selectedCenter} mapRef={mapRef} />
           )}
@@ -229,11 +219,7 @@ const EvacuationMap = ({ refreshTrigger }) => {
           <MdLocationOn size={24} color="#f44336" />
           List of Evacuation Centers
         </h3>
-        <div className="centers-grid" style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-          gap: '20px' 
-        }}>
+        <div className="centers-grid">
           {centers.map((center) => (
             <div 
               key={center.center_id} 
@@ -290,7 +276,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
                   <span>{center.contact_number}</span>
                 </p>
               )}
-              {/* Display plus_code kung meron para makita ng user */}
               {center.plus_code && (
                 <p className="center-plus-code" style={{ margin: '5px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <MdLocationOn size={12} />

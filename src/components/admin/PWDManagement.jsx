@@ -59,35 +59,87 @@ const PWDManagement = ({ refreshTrigger }) => {
   }
 
   return (
-    <div>
-      <h2>PWD Registry</h2>
-      <p style={{ color: 'var(--gray-dark)', marginBottom: '25px' }}>
-        List of registered Persons with Disabilities
-      </p>
+    <div className="pwd-management-container" style={{ padding: '0 16px' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '25px' }}>
+        <h2>PWD Registry</h2>
+        <p style={{ color: 'var(--gray-dark)', marginBottom: '0' }}>
+          List of registered Persons with Disabilities
+        </p>
+      </div>
 
-      <div className="admin-table-container">
-        <table className="admin-table">
+      {/* Table Container - Responsive with horizontal scroll */}
+      <div className="admin-table-container" style={{ 
+        overflowX: 'auto', 
+        WebkitOverflowScrolling: 'touch',
+        borderRadius: '12px',
+        border: '1px solid #e5e7eb',
+        backgroundColor: 'white'
+      }}>
+        <table className="admin-table" style={{ 
+          width: '100%', 
+          borderCollapse: 'collapse',
+          minWidth: '800px'
+        }}>
           <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Contact</th>
-              <th>Disability Category</th>
-              <th>Mobility Level</th>
-              <th>Medical Device</th>
-              <th>Registered Date</th>
-            </tr>
+            <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+              <th style={{ padding: '16px', textAlign: 'left' }}>Name</th>
+              <th style={{ padding: '16px', textAlign: 'left' }}>Email</th>
+              <th style={{ padding: '16px', textAlign: 'left' }}>Contact</th>
+              <th style={{ padding: '16px', textAlign: 'left' }}>Disability Category</th>
+              <th style={{ padding: '16px', textAlign: 'left' }}>Mobility Level</th>
+              <th style={{ padding: '16px', textAlign: 'center' }}>Medical Device</th>
+              <th style={{ padding: '16px', textAlign: 'left' }}>Registered Date</th>
+             </tr>
           </thead>
           <tbody>
-            {pwdList.map((pwd) => (
-              <tr key={pwd.pwd_id}>
-                <td>{pwd.users?.full_name || 'N/A'}</td>
-                <td>{pwd.users?.email || 'N/A'}</td>
-                <td>{pwd.users?.contact_number || 'N/A'}</td>
-                <td>{pwd.disability_category || 'N/A'}</td>
-                <td>{pwd.mobility_level || 'N/A'}</td>
-                <td>{pwd.needs_medical_device ? 'Yes' : 'No'}</td>
-                <td>{new Date(pwd.created_at).toLocaleDateString()}</td>
+            {pwdList.map((pwd, index) => (
+              <tr key={pwd.pwd_id} style={{ 
+                borderBottom: index < pwdList.length - 1 ? '1px solid #e5e7eb' : 'none'
+              }}>
+                <td style={{ padding: '16px', fontWeight: '500' }}>
+                  {pwd.users?.full_name || 'N/A'}
+                </td>
+                <td style={{ padding: '16px' }}>
+                  {pwd.users?.email || 'N/A'}
+                </td>
+                <td style={{ padding: '16px' }}>
+                  {pwd.users?.contact_number || 'N/A'}
+                </td>
+                <td style={{ padding: '16px' }}>
+                  {pwd.disability_category || 'N/A'}
+                </td>
+                <td style={{ padding: '16px' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '4px 8px',
+                    borderRadius: '20px',
+                    fontSize: '11px',
+                    fontWeight: '500',
+                    backgroundColor: pwd.mobility_level === 'Independent' ? '#d1fae5' :
+                                   pwd.mobility_level === 'Needs Assistance' ? '#fed7aa' : '#fee2e2',
+                    color: pwd.mobility_level === 'Independent' ? '#065f46' :
+                           pwd.mobility_level === 'Needs Assistance' ? '#92400e' : '#991b1b'
+                  }}>
+                    {pwd.mobility_level || 'N/A'}
+                  </span>
+                </td>
+                <td style={{ padding: '16px', textAlign: 'center' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '4px 8px',
+                    borderRadius: '20px',
+                    fontSize: '11px',
+                    fontWeight: '500',
+                    backgroundColor: pwd.needs_medical_device ? '#fee2e2' : '#e5e7eb',
+                    color: pwd.needs_medical_device ? '#991b1b' : '#4b5563'
+                  }}>
+                    {pwd.needs_medical_device ? 'Yes' : 'No'}
+                  </span>
+                </td>
+                <td style={{ padding: '16px' }}>
+                  {new Date(pwd.created_at).toLocaleDateString()}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -95,7 +147,16 @@ const PWDManagement = ({ refreshTrigger }) => {
       </div>
       
       {pwdList.length === 0 && (
-        <div className="no-data">No PWD registrations found</div>
+        <div className="no-data" style={{
+          textAlign: 'center',
+          padding: '60px',
+          background: '#f8f9fa',
+          borderRadius: '12px',
+          marginTop: '20px',
+          color: '#6b7280'
+        }}>
+          No PWD registrations found
+        </div>
       )}
     </div>
   );

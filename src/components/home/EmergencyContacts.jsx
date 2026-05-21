@@ -109,7 +109,7 @@ const EmergencyContacts = ({ refreshTrigger }) => {
 
   if (loading) {
     return (
-      <div className="loading-contacts">
+      <div className="loading-contacts" style={{ textAlign: 'center', padding: '40px' }}>
         <div className="spinner"></div>
         <p>Loading emergency contacts...</p>
       </div>
@@ -117,7 +117,7 @@ const EmergencyContacts = ({ refreshTrigger }) => {
   }
 
   if (contacts.length === 0) {
-    return <p className="no-data">No emergency contacts available.</p>;
+    return <p className="no-data" style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>No emergency contacts available.</p>;
   }
 
   return (
@@ -128,28 +128,60 @@ const EmergencyContacts = ({ refreshTrigger }) => {
           const showFallback = imageErrors[contact.contact_id] || !logoPath;
           
           return (
-            <div key={contact.contact_id} className="contact-card">
-              <div className="contact-icon-wrapper">
+            <div key={contact.contact_id} className="contact-card" style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '20px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              cursor: 'pointer'
+            }}>
+              <div className="contact-icon-wrapper" style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: '16px'
+              }}>
                 {!showFallback ? (
                   <img 
                     src={logoPath}
                     alt={`${contact.agency_name} logo`}
                     className="official-logo"
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      objectFit: 'contain'
+                    }}
                     onError={() => handleImageError(contact.contact_id)}
                   />
                 ) : (
-                  <span className="fallback-icon">
+                  <span className="fallback-icon" style={{
+                    fontSize: '48px'
+                  }}>
                     {getFallbackIcon(contact.agency_name)}
                   </span>
                 )}
               </div>
-              <div className="contact-info">
-                <h4>{contact.agency_name}</h4>
-                <p className="contact-number">{contact.contact_number}</p>
+              <div className="contact-info" style={{ textAlign: 'center' }}>
+                <h4 style={{
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  marginBottom: '8px',
+                  color: '#111827'
+                }}>{contact.agency_name}</h4>
+                <p className="contact-number" style={{
+                  fontSize: '14px',
+                  color: '#f97316',
+                  fontWeight: '500',
+                  marginBottom: '8px'
+                }}>{contact.contact_number}</p>
                 {contact.description && (
-                  <p className="contact-description">{contact.description}</p>
+                  <p className="contact-description" style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    lineHeight: '1.4'
+                  }}>{contact.description}</p>
                 )}
-                {/* WALA NG BUTTON DITO */}
               </div>
             </div>
           );

@@ -1277,411 +1277,196 @@ select.auth-input {
   }
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .centers-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ========== USER PROFILE EDIT STYLES ========== */
+
+/* Profile Card Enhancements */
+.profile-card {
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  padding: 30px;
+  box-shadow: var(--shadow-md);
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-  .navbar {
-    padding: 0 15px;
-    height: 60px;
-  }
-
-  .nav-links {
-    gap: 12px;
-    font-size: 0.85rem;
-  }
-
-  .nav-logo {
-    font-size: 1.2rem;
-  }
-
-  .user-greeting {
-    display: none;
-  }
-
-  .content {
-    padding: 20px 15px;
-  }
-
-  .content h2 {
-    font-size: 1.6rem;
-  }
-
-  .content h2::after {
-    width: 40px;
-  }
-
-  .map-wrapper {
-    height: 400px;
-  }
-
-  .auth-card {
-    padding: 30px 20px;
-  }
-
-  .auth-card h2 {
-    font-size: 1.5rem;
-  }
-
-  .auth-card h1.brand {
-    font-size: 2rem;
-  }
-
-  .centers-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .map-legend {
-    bottom: 10px;
-    right: 10px;
-    padding: 10px;
-    min-width: 140px;
-    font-size: 0.8rem;
-  }
-
-  .map-legend h4 {
-    font-size: 0.9rem;
-  }
-
-  .legend-item {
-    font-size: 0.8rem;
-    margin: 6px 0;
-  }
-
-  .legend-dot {
-    width: 16px;
-    height: 16px;
-  }
-
-  .leaflet-popup-content {
-    min-width: 220px;
-    max-width: 260px;
-  }
-
-  .evac-popup h3 {
-    font-size: 0.95rem;
-  }
-
-  .evac-popup p {
-    font-size: 0.8rem;
-  }
-
-  .directions-btn {
-    padding: 8px;
-    font-size: 0.8rem;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .profile-details p {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .profile-details p strong {
-    min-width: auto;
-  }
-
-  /* Emergency Contacts Responsive */
-  .contacts-container {
-    padding: 15px;
-  }
-  
-  .contact-card {
-    padding: 20px 15px;
-  }
-  
-  .contact-icon-wrapper {
-    width: 70px;
-    height: 70px;
-  }
-  
-  .contact-number {
-    font-size: 1.2rem;
-  }
-  
-  .contact-info h4 {
-    font-size: 1rem;
-  }
+.profile-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--light-gray);
 }
 
-@media (max-width: 480px) {
-  .nav-links {
-    gap: 8px;
-    font-size: 0.75rem;
-  }
-
-  .login-btn-nav {
-    padding: 6px 12px;
-    font-size: 0.8rem;
-  }
-
-  .card {
-    padding: 18px;
-  }
-
-  .card h3 {
-    font-size: 1.1rem;
-  }
-
-  .map-wrapper {
-    height: 350px;
-  }
-
-  .pwd-toggle-section {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-
-  .toggle-btn {
-    width: 100%;
-  }
-
-  .auth-input {
-    padding: 12px;
-  }
-
-  .btn-main {
-    padding: 12px;
-  }
-
-  .map-legend {
-    display: none;
-  }
-
-  .center-card h4 {
-    font-size: 1rem;
-    padding-right: 60px;
-  }
-
-  .center-capacity {
-    font-size: 0.85rem;
-  }
-
-  .status-badge {
-    padding: 4px 8px;
-    font-size: 0.7rem;
-  }
-
-  .center-icon {
-    font-size: 2rem;
-  }
-
-  .guides-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Emergency Contacts Responsive */
-  .contacts-container {
-    padding: 10px;
-  }
-  
-  .contacts-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  
-  .contact-card {
-    padding: 16px 12px;
-  }
-  
-  .contact-icon-wrapper {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .official-logo {
-    width: 70%;
-    height: 70%;
-  }
-  
-  .fallback-icon {
-    font-size: 32px;
-  }
-  
-  .contact-number {
-    font-size: 1.1rem;
-  }
-  
-  .contact-info h4 {
-    font-size: 0.95rem;
-  }
-  
-  .call-button {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    width: 100%;
-  }
-}
-
-/* Landscape Mode */
-@media (max-height: 600px) and (orientation: landscape) {
-  .map-wrapper {
-    height: 300px;
-  }
-
-  .auth-card {
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .register-card {
-    max-height: 90vh;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .navbar,
-  .emergency-banner,
-  .btn-main,
-  .btn-guest-outline,
-  .login-btn-nav,
-  .logout-mini,
-  .directions-btn,
-  .map-legend {
-    display: none !important;
-  }
-
-  .card,
-  .alert-card,
-  .center-card,
-  .contact-card,
-  .guide-card,
-  .profile-card {
-    break-inside: avoid;
-    border: 1px solid #000;
-    box-shadow: none;
-  }
-
-  .map-wrapper {
-    border: 2px solid #000;
-    page-break-inside: avoid;
-    height: 400px;
-  }
-
-  .content {
-    padding: 20px;
-  }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Focus States for Accessibility */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-a:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* Success and Error Messages */
-.success-message {
-  background: var(--green-light);
-  color: var(--green);
-  padding: 12px 16px;
-  border-radius: var(--border-radius-md);
-  margin: 10px 0;
-  border-left: 4px solid var(--green);
-  animation: slideIn 0.3s ease;
-}
-
-.error-message {
-  background: var(--danger-light);
-  color: var(--danger);
-  padding: 12px 16px;
-  border-radius: var(--border-radius-md);
-  margin: 10px 0;
-  border-left: 4px solid var(--danger);
-  animation: slideIn 0.3s ease;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--light-gray);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Loading Placeholder for Map */
-.map-loading {
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(90deg, var(--light-gray) 25%, #e0e0e0 50%, var(--light-gray) 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+  color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--shadow-md);
+}
+
+.profile-header h3 {
+  color: var(--dark);
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+}
+
+.profile-details {
+  margin-bottom: 20px;
+}
+
+.profile-details p {
+  margin: 15px 0;
+  padding: 12px 15px;
+  background: var(--light-gray);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-details p strong {
+  min-width: 100px;
+  color: var(--dark);
+}
+
+.profile-details p span {
   color: var(--gray-dark);
-  font-size: 1.2rem;
-  border-radius: var(--border-radius-xl);
+  flex: 1;
 }
 
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Tooltip Styles */
-[data-tooltip] {
-  position: relative;
-  cursor: help;
-}
-
-[data-tooltip]:before {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 12px;
-  background: var(--dark);
-  color: white;
-  font-size: 0.8rem;
+/* Edit Input Styles */
+.edit-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--gray);
   border-radius: var(--border-radius-sm);
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  z-index: 2000;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--white);
+  transition: var(--transition);
 }
 
-[data-tooltip]:hover:before {
-  opacity: 1;
-  visibility: visible;
-  bottom: calc(100% + 5px);
+.edit-input:focus {
+  outline: none;
+  border-color: var(--danger);
+  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.1);
+}
+
+.address-edit-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* PWD Section */
+.pwd-divider {
+  margin: 20px 0;
+  border: none;
+  border-top: 2px solid var(--gray);
+}
+
+.pwd-section {
+  background: var(--accent-light);
+  padding: 20px;
+  border-radius: var(--border-radius-lg);
+  margin-top: 10px;
+}
+
+.pwd-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.pwd-section p {
+  background: var(--white);
+  margin: 10px 0;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pwd-section p strong {
+  min-width: 130px;
+}
+
+/* Profile Action Buttons */
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.profile-actions .btn-main,
+.profile-actions .btn-guest-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+}
+
+/* Loading Profile */
+.loading-profile {
+  text-align: center;
+  padding: 60px;
+  font-size: 1.2rem;
+  color: var(--gray-dark);
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+}
+
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.admin-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.card {
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
 }
 
 /* ========== ADMIN PANEL STYLES ========== */
@@ -1927,51 +1712,16 @@ a:focus-visible {
   margin: 5px 0;
 }
 
-/* Mobile Menu */
-.admin-mobile-menu {
-  display: none;
-  position: fixed;
-  top: 70px;
-  left: 0;
-  right: 0;
-  background: var(--dark);
-  padding: 10px;
-  z-index: 999;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.admin-mobile-menu.active {
-  display: block;
-}
-
-.admin-mobile-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 15px;
-  color: white;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  transition: var(--transition);
-  width: 100%;
-  background: transparent;
-  border: none;
-}
-
-.admin-mobile-item:hover,
-.admin-mobile-item.active {
-  background: rgba(255,255,255,0.1);
-}
-
-/* Admin Sidebar */
+/* Admin Sidebar - RESPONSIVE HAMBURGER */
 .admin-sidebar {
   position: fixed;
   top: 70px;
   left: 0;
   bottom: 0;
   width: 260px;
-  background: var(--white);
-  box-shadow: var(--shadow-md);
+  background: #1e1e2d;
+  color: #9899ac;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 1000;
@@ -1980,6 +1730,39 @@ a:focus-visible {
 
 .admin-sidebar.open {
   transform: translateX(0);
+}
+
+/* Sidebar overlay */
+.admin-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Sidebar close button */
+.sidebar-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #2a2a3e;
+  color: #9899ac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.sidebar-close-btn:hover {
+  background-color: var(--danger);
+  color: white;
 }
 
 .admin-sidebar-content {
@@ -1991,18 +1774,19 @@ a:focus-visible {
   align-items: center;
   gap: 12px;
   padding: 12px 20px;
-  color: var(--dark);
+  color: #9899ac;
   transition: var(--transition);
   cursor: pointer;
   border-left: 3px solid transparent;
 }
 
 .admin-sidebar-item:hover {
-  background: var(--light-gray);
+  background: #2a2a3e;
+  color: var(--danger);
 }
 
 .admin-sidebar-item.active {
-  background: var(--danger-light);
+  background: #2a2a3e;
   border-left-color: var(--danger);
   color: var(--danger);
 }
@@ -2068,6 +1852,7 @@ a:focus-visible {
 .admin-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px;
 }
 
 .admin-table thead {
@@ -2169,6 +1954,8 @@ a:focus-visible {
   font-size: 1.5rem;
   cursor: pointer;
   color: var(--gray-dark);
+  min-width: 36px;
+  min-height: 36px;
 }
 
 .admin-modal-body {
@@ -2181,6 +1968,7 @@ a:focus-visible {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* Form Styles for Admin */
@@ -2291,16 +2079,605 @@ a:focus-visible {
   min-height: 400px;
 }
 
-.admin-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--light-gray);
-  border-top-color: var(--danger);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+/* ========== RESPONSIVE DESIGN (LAHAT NG DEVICE) ========== */
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .content {
+    max-width: 1400px;
+  }
 }
 
-/* Responsive Admin Styles */
+/* Desktop and Tablet */
+@media (max-width: 1024px) {
+  .centers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .guides-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .contacts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  /* Navigation */
+  .navbar {
+    padding: 0 15px;
+    height: 60px;
+  }
+  
+  .nav-links {
+    gap: 12px;
+    font-size: 0.85rem;
+  }
+  
+  .nav-logo {
+    font-size: 1.2rem;
+  }
+  
+  .user-greeting {
+    display: none;
+  }
+  
+  .content {
+    padding: 20px 15px;
+  }
+  
+  .content h2 {
+    font-size: 1.6rem;
+  }
+  
+  .content h2::after {
+    width: 40px;
+  }
+  
+  /* Map */
+  .map-wrapper {
+    height: 400px;
+  }
+  
+  /* Auth */
+  .auth-card {
+    padding: 30px 20px;
+  }
+  
+  .auth-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .auth-card h1.brand {
+    font-size: 2rem;
+  }
+  
+  /* Grids */
+  .centers-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .guides-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .contacts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Map Legend */
+  .map-legend {
+    bottom: 10px;
+    right: 10px;
+    padding: 10px;
+    min-width: 140px;
+    font-size: 0.8rem;
+  }
+  
+  .map-legend h4 {
+    font-size: 0.9rem;
+  }
+  
+  .legend-item {
+    font-size: 0.8rem;
+    margin: 6px 0;
+  }
+  
+  .legend-dot {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Popup */
+  .leaflet-popup-content {
+    min-width: 220px;
+    max-width: 260px;
+  }
+  
+  .evac-popup h3 {
+    font-size: 0.95rem;
+  }
+  
+  .evac-popup p {
+    font-size: 0.8rem;
+  }
+  
+  .directions-btn {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  /* Profile */
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .profile-details p {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .profile-details p strong {
+    min-width: auto;
+  }
+  
+  .profile-actions {
+    flex-direction: column;
+  }
+  
+  .edit-input {
+    width: 100%;
+  }
+  
+  /* Emergency Contacts */
+  .contacts-container {
+    padding: 15px;
+  }
+  
+  .contact-card {
+    padding: 20px 15px;
+  }
+  
+  .contact-icon-wrapper {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .contact-number {
+    font-size: 1.2rem;
+  }
+  
+  .contact-info h4 {
+    font-size: 1rem;
+  }
+  
+  /* Admin Sidebar - Mobile */
+  .admin-sidebar {
+    width: 280px;
+  }
+  
+  .admin-main-content {
+    margin-left: 0 !important;
+  }
+  
+  /* Admin Notifications */
+  .notifications-dropdown {
+    width: calc(100vw - 40px);
+    right: -60px;
+  }
+  
+  .admin-user-info {
+    display: none;
+  }
+  
+  .admin-stat-value {
+    font-size: 1.5rem;
+  }
+  
+  /* Admin Tables */
+  .admin-table th,
+  .admin-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+  
+  /* Admin Grid */
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Cards */
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-card .stat-value {
+    font-size: 24px;
+  }
+  
+  /* Profile section */
+  .pwd-section p {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .nav-links {
+    gap: 8px;
+    font-size: 0.75rem;
+  }
+  
+  .login-btn-nav {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .card {
+    padding: 18px;
+  }
+  
+  .card h3 {
+    font-size: 1.1rem;
+  }
+  
+  .map-wrapper {
+    height: 350px;
+  }
+  
+  .pwd-toggle-section {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .toggle-btn {
+    width: 100%;
+  }
+  
+  .auth-input {
+    padding: 12px;
+  }
+  
+  .btn-main {
+    padding: 12px;
+  }
+  
+  .map-legend {
+    display: none;
+  }
+  
+  .center-card h4 {
+    font-size: 1rem;
+    padding-right: 60px;
+  }
+  
+  .center-capacity {
+    font-size: 0.85rem;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+  
+  .center-icon {
+    font-size: 2rem;
+  }
+  
+  /* Emergency Contacts */
+  .contacts-container {
+    padding: 10px;
+  }
+  
+  .contacts-grid {
+    gap: 14px;
+  }
+  
+  .contact-card {
+    padding: 16px 12px;
+  }
+  
+  .contact-icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .official-logo {
+    width: 70%;
+    height: 70%;
+  }
+  
+  .fallback-icon {
+    font-size: 32px;
+  }
+  
+  .contact-number {
+    font-size: 1.1rem;
+  }
+  
+  .contact-info h4 {
+    font-size: 0.95rem;
+  }
+  
+  .call-button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    width: 100%;
+  }
+  
+  /* Admin Modal */
+  .admin-modal {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .admin-modal-footer {
+    flex-direction: column;
+  }
+  
+  .admin-modal-footer button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+  
+  /* Admin Sidebar */
+  .admin-sidebar {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* Landscape Mode */
+@media (max-height: 600px) and (orientation: landscape) {
+  .map-wrapper {
+    height: 300px;
+  }
+  
+  .auth-card {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .register-card {
+    max-height: 90vh;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .navbar,
+  .emergency-banner,
+  .btn-main,
+  .btn-guest-outline,
+  .login-btn-nav,
+  .logout-mini,
+  .directions-btn,
+  .map-legend,
+  .admin-sidebar,
+  .admin-navbar {
+    display: none !important;
+  }
+  
+  .card,
+  .alert-card,
+  .center-card,
+  .contact-card,
+  .guide-card,
+  .profile-card {
+    break-inside: avoid;
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+  
+  .map-wrapper {
+    border: 2px solid #000;
+    page-break-inside: avoid;
+    height: 400px;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
+  .admin-main-content {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus States for Accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Success and Error Messages */
+.success-message {
+  background: var(--green-light);
+  color: var(--green);
+  padding: 12px 16px;
+  border-radius: var(--border-radius-md);
+  margin: 10px 0;
+  border-left: 4px solid var(--green);
+  animation: slideIn 0.3s ease;
+}
+
+.error-message {
+  background: var(--danger-light);
+  color: var(--danger);
+  padding: 12px 16px;
+  border-radius: var(--border-radius-md);
+  margin: 10px 0;
+  border-left: 4px solid var(--danger);
+  animation: slideIn 0.3s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--light-gray);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Loading Placeholder for Map */
+.map-loading {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--light-gray) 25%, #e0e0e0 50%, var(--light-gray) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-dark);
+  font-size: 1.2rem;
+  border-radius: var(--border-radius-xl);
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Tooltip Styles */
+[data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+
+[data-tooltip]:before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background: var(--dark);
+  color: white;
+  font-size: 0.8rem;
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 2000;
+}
+
+[data-tooltip]:hover:before {
+  opacity: 1;
+  visibility: visible;
+  bottom: calc(100% + 5px);
+}
+
+/* Touch-friendly targets for mobile */
+@media (max-width: 768px) {
+  button,
+  .admin-action-icon,
+  .call-button,
+  .google-maps-btn,
+  .directions-btn,
+  .toggle-btn,
+  .admin-btn,
+  .sidebar-close-btn,
+  .admin-modal-close {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+/* Fix overlapping issues */
+.content {
+  padding: 30px 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex: 1;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure alerts don't overlap */
+.alerts-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix navbar z-index issues */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #0f0f1a;
+}
+
+/* Fix mobile menu overlapping */
+.mobile-menu-dropdown {
+  z-index: 999;
+}
+
+.mobile-menu-overlay {
+  z-index: 998;
+}
+
+/* Ensure main content is below navbar but above nothing else */
+main, .content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Admin Sidebar Desktop */
 @media (min-width: 769px) {
   .admin-sidebar {
     transform: translateX(0);
@@ -2313,290 +2690,19 @@ a:focus-visible {
   .admin-mobile-toggle {
     display: none !important;
   }
-}
-/* ========== USER PROFILE EDIT STYLES ========== */
-
-/* Profile Card Enhancements */
-.profile-card {
-  background: var(--white);
-  border-radius: var(--border-radius-lg);
-  padding: 30px;
-  box-shadow: var(--shadow-md);
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.profile-header {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid var(--light-gray);
-}
-
-.profile-avatar {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, var(--danger), var(--danger-dark));
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
-}
-
-.profile-header h3 {
-  color: var(--dark);
-  margin-bottom: 5px;
-  font-size: 1.5rem;
-}
-
-.profile-details {
-  margin-bottom: 20px;
-}
-
-.profile-details p {
-  margin: 15px 0;
-  padding: 12px 15px;
-  background: var(--light-gray);
-  border-radius: var(--border-radius-md);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.profile-details p strong {
-  min-width: 100px;
-  color: var(--dark);
-}
-
-.profile-details p span {
-  color: var(--gray-dark);
-  flex: 1;
-}
-
-/* Edit Input Styles */
-.edit-input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid var(--gray);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.9rem;
-  font-family: inherit;
-  background: var(--white);
-  transition: var(--transition);
-}
-
-.edit-input:focus {
-  outline: none;
-  border-color: var(--danger);
-  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.1);
-}
-
-.address-edit-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* PWD Section */
-.pwd-divider {
-  margin: 20px 0;
-  border: none;
-  border-top: 2px solid var(--gray);
-}
-
-.pwd-section {
-  background: var(--accent-light);
-  padding: 20px;
-  border-radius: var(--border-radius-lg);
-  margin-top: 10px;
-}
-
-.pwd-section h4 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--accent);
-  margin-bottom: 15px;
-  font-size: 1.1rem;
-}
-
-.pwd-section p {
-  background: var(--white);
-  margin: 10px 0;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.pwd-section p strong {
-  min-width: 130px;
-}
-
-/* Profile Action Buttons */
-.profile-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.profile-actions .btn-main,
-.profile-actions .btn-guest-outline {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex: 1;
-}
-
-/* Loading Profile */
-.loading-profile {
-  text-align: center;
-  padding: 60px;
-  font-size: 1.2rem;
-  color: var(--gray-dark);
-  background: var(--white);
-  border-radius: var(--border-radius-lg);
-}
-.stat-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.admin-loading {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
-
-.admin-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.card {
-  transition: box-shadow 0.2s ease;
-}
-
-.card:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.no-data {
-  text-align: center;
-  padding: 40px;
-  color: #6b7280;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .admin-dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .stat-card {
-    padding: 16px;
-  }
   
-  .stat-card .stat-value {
-    font-size: 24px;
+  .sidebar-close-btn {
+    display: none !important;
   }
 }
 
-/* Responsive Profile */
-@media (max-width: 768px) {
-  .profile-card {
-    padding: 20px;
-  }
-  
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .profile-details p {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .profile-details p strong {
-    min-width: auto;
-  }
-  
-  .pwd-section p {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .profile-actions {
-    flex-direction: column;
-  }
-  
-  .edit-input {
-    width: 100%;
-  }
-}
-
+/* Admin Sidebar Mobile */
 @media (max-width: 768px) {
   .admin-sidebar {
-    width: 280px;
+    transform: translateX(-100%);
   }
   
-  .admin-main-content,
-  .admin-main-content.sidebar-open {
-    margin-left: 0;
-  }
-  
-  .notifications-dropdown {
-    width: calc(100vw - 40px);
-    right: -60px;
-  }
-  
-  .admin-user-info {
-    display: none;
-  }
-  
-  .admin-mobile-menu.active {
-    display: block;
-  }
-  
-  .admin-stat-value {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .admin-modal {
-    width: 95%;
-    margin: 10px;
-  }
-  
-  .admin-table th,
-  .admin-table td {
-    padding: 8px 10px;
-    font-size: 0.8rem;
+  .admin-sidebar.open {
+    transform: translateX(0);
   }
 }

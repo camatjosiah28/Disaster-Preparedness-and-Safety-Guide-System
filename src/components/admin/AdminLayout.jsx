@@ -5,18 +5,17 @@ import AdminSidebar from './AdminSidebar';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Start closed on all devices
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const getActiveTabFromPath = () => {
     const path = location.pathname;
-    console.log('Current path:', path); // Para ma-debug mo
     
     if (path === '/admin') return 'dashboard';
     if (path.includes('/admin/centers')) return 'centers';
-    if (path.includes('/admin/population')) return 'population';  // ✅ IDAGDAG ITO - PINAKAIMPORTANTE
+    if (path.includes('/admin/population')) return 'population';
     if (path.includes('/admin/alerts')) return 'alerts';
     if (path.includes('/admin/pwd')) return 'pwd';
     if (path.includes('/admin/contacts')) return 'contacts';
@@ -27,11 +26,10 @@ const AdminLayout = () => {
 
   const [activeTab, setActiveTab] = useState(getActiveTabFromPath());
 
-  // ✅ IMPORTANTE: Panoorin ang location changes at i-update ang activeTab
   useEffect(() => {
     const newActiveTab = getActiveTabFromPath();
     setActiveTab(newActiveTab);
-  }, [location.pathname]); // Magre-run every time nag-change ang URL
+  }, [location.pathname]);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
@@ -42,7 +40,7 @@ const AdminLayout = () => {
       case 'centers':
         navigate('/admin/centers');
         break;
-      case 'population':   // ✅ IDAGDAG ITO
+      case 'population':
         navigate('/admin/population');
         break;
       case 'alerts':
@@ -70,8 +68,25 @@ const AdminLayout = () => {
     navigate('/login');
   };
 
+  // Prevent body scroll when sidebar is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [sidebarOpen]);
+
   return (
-    <div className="admin-app">
+    <div className="admin-app" style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      backgroundColor: '#f3f4f6'
+    }}>
       <AdminNavbar 
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -80,17 +95,31 @@ const AdminLayout = () => {
         onLogout={handleLogout}
       />
       
-      <AdminSidebar 
-        sidebarOpen={sidebarOpen} 
-        setSidebarOpen={setSidebarOpen}
-        activeTab={activeTab}
-        setActiveTab={handleTabChange}
-      />
+      <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
+        <AdminSidebar 
+          sidebarOpen={sidebarOpen} 
+          setSidebarOpen={setSidebarOpen}
+          activeTab={activeTab}
+          setActiveTab={handleTabChange}
+        />
         
-      <div className={`admin-main-content ${sidebarOpen ? 'sidebar-open' : ''}`}>
-        <div className="content" style={{ paddingTop: '30px' }}>
-          <Outlet />
-        </div>
+        {/* Main Content */}
+        <main 
+          className="admin-main-content"
+          style={{
+            flex: 1,
+            width: '100%',
+            overflowX: 'auto'
+          }}
+        >
+          <div className="content" style={{ 
+            padding: '20px',
+            maxWidth: '1400px',
+            margin: '0 auto'
+          }}>
+            <Outlet />
+          </div>
+        </main>
       </div>
     </div>
   );

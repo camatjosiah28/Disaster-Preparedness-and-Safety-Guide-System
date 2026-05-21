@@ -201,9 +201,16 @@ const BarangayPopulationManager = () => {
   }
 
   return (
-    <div style={{ padding: '24px' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+    <div className="barangay-manager-container" style={{ padding: '24px' }}>
+      {/* Header - Responsive */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '24px', 
+        flexWrap: 'wrap', 
+        gap: '16px' 
+      }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>Barangay Population Baseline</h1>
           <p style={{ color: '#6b7280', marginTop: '8px', marginBottom: 0 }}>
@@ -222,7 +229,8 @@ const BarangayPopulationManager = () => {
             border: 'none',
             borderRadius: '8px',
             cursor: 'pointer',
-            fontWeight: '500'
+            fontWeight: '500',
+            minHeight: '44px'
           }}
         >
           <Plus size={18} />
@@ -240,7 +248,8 @@ const BarangayPopulationManager = () => {
           marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px'
+          gap: '10px',
+          flexWrap: 'wrap'
         }}>
           <CheckCircle size={18} color="#10b981" />
           <span style={{ color: '#065f46' }}>{success}</span>
@@ -256,14 +265,15 @@ const BarangayPopulationManager = () => {
           marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px'
+          gap: '10px',
+          flexWrap: 'wrap'
         }}>
           <AlertCircle size={18} color="#ef4444" />
           <span style={{ color: '#991b1b' }}>{error}</span>
         </div>
       )}
 
-      {/* Summary Cards */}
+      {/* Summary Cards - Responsive Grid */}
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
@@ -313,15 +323,15 @@ const BarangayPopulationManager = () => {
         </div>
       </div>
 
-      {/* Barangay Data Table */}
+      {/* Barangay Data Table - Responsive */}
       <div style={{ 
         backgroundColor: 'white', 
         borderRadius: '12px', 
         overflow: 'hidden',
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
       }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
             <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
               <tr>
                 <th style={{ padding: '16px', textAlign: 'left' }}>Barangay</th>
@@ -341,105 +351,103 @@ const BarangayPopulationManager = () => {
                       <MapPin size={16} color="#6b7280" />
                       {barangay.barangay_name}
                     </div>
-                  </td>
+                   </td>
                   
                   {editingId === barangay.barangay_id ? (
-                    // Edit Mode
                     <>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         <input
                           type="number"
                           value={editForm.total_population}
                           onChange={(e) => setEditForm({...editForm, total_population: e.target.value})}
-                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '14px' }}
                         />
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         <input
                           type="number"
                           value={editForm.total_households}
                           onChange={(e) => setEditForm({...editForm, total_households: e.target.value})}
-                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '14px' }}
                         />
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         <input
                           type="number"
                           value={editForm.pwd_count}
                           onChange={(e) => setEditForm({...editForm, pwd_count: e.target.value})}
-                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '14px' }}
                         />
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         <input
                           type="number"
                           value={editForm.senior_count}
                           onChange={(e) => setEditForm({...editForm, senior_count: e.target.value})}
-                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '14px' }}
                         />
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         <input
                           type="number"
                           value={editForm.child_count}
                           onChange={(e) => setEditForm({...editForm, child_count: e.target.value})}
-                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+                          style={{ width: '100px', padding: '6px 8px', textAlign: 'right', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '14px' }}
                         />
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'center' }}>
                         <button
                           onClick={() => handleSave(barangay.barangay_id)}
-                          style={{ background: '#10b981', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', marginRight: '8px', color: 'white' }}
+                          style={{ background: '#10b981', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', marginRight: '8px', color: 'white', minWidth: '36px', minHeight: '36px' }}
                           title="Save"
                         >
                           <Save size={14} />
                         </button>
                         <button
                           onClick={handleCancelEdit}
-                          style={{ background: '#6b7280', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', color: 'white' }}
+                          style={{ background: '#6b7280', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', color: 'white', minWidth: '36px', minHeight: '36px' }}
                           title="Cancel"
                         >
                           <X size={14} />
                         </button>
-                      </td>
+                       </td>
                     </>
                   ) : (
-                    // View Mode
                     <>
                       <td style={{ padding: '16px', textAlign: 'right', fontWeight: '500' }}>
                         {barangay.total_population?.toLocaleString()}
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.total_households?.toLocaleString()}
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.pwd_count?.toLocaleString()}
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.senior_count?.toLocaleString()}
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.child_count?.toLocaleString()}
-                      </td>
+                       </td>
                       <td style={{ padding: '16px', textAlign: 'center' }}>
                         <button
                           onClick={() => handleEdit(barangay)}
-                          style={{ background: '#3b82f6', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', marginRight: '8px', color: 'white' }}
+                          style={{ background: '#3b82f6', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', marginRight: '8px', color: 'white', minWidth: '36px', minHeight: '36px' }}
                           title="Edit"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(barangay.barangay_id, barangay.barangay_name)}
-                          style={{ background: '#ef4444', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', color: 'white' }}
+                          style={{ background: '#ef4444', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', color: 'white', minWidth: '36px', minHeight: '36px' }}
                           title="Delete"
                         >
                           <Trash2 size={14} />
                         </button>
-                      </td>
+                       </td>
                     </>
                   )}
-                </tr>
+                 </tr>
               ))}
             </tbody>
             <tfoot style={{ backgroundColor: '#f9fafb', borderTop: '2px solid #e5e7eb', fontWeight: 'bold' }}>
@@ -451,9 +459,9 @@ const BarangayPopulationManager = () => {
                 <td style={{ padding: '16px', textAlign: 'right' }}>{totals.senior_count.toLocaleString()}</td>
                 <td style={{ padding: '16px', textAlign: 'right' }}>{totals.child_count.toLocaleString()}</td>
                 <td style={{ padding: '16px', textAlign: 'center' }}></td>
-              </tr>
+               </tr>
             </tfoot>
-          </table>
+           </table>
         </div>
       </div>
 
@@ -470,7 +478,7 @@ const BarangayPopulationManager = () => {
         </div>
       )}
 
-      {/* Add Barangay Modal */}
+      {/* Add Barangay Modal - Responsive */}
       {showAddModal && (
         <div style={{
           position: 'fixed',
@@ -482,14 +490,23 @@ const BarangayPopulationManager = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 1000
+          zIndex: 1000,
+          padding: '16px'
         }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', width: '500px', maxWidth: '90%', maxHeight: '90%', overflow: 'auto' }}>
+          <div style={{ 
+            backgroundColor: 'white', 
+            borderRadius: '12px', 
+            padding: '24px', 
+            width: '500px', 
+            maxWidth: '100%', 
+            maxHeight: '90%', 
+            overflow: 'auto' 
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>Add New Barangay</h2>
               <button 
                 onClick={() => setShowAddModal(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', minWidth: '36px', minHeight: '36px' }}
               >
                 <X size={24} color="#6b7280" />
               </button>
@@ -502,7 +519,7 @@ const BarangayPopulationManager = () => {
                 value={newBarangay.barangay_name}
                 onChange={(e) => setNewBarangay({...newBarangay, barangay_name: e.target.value})}
                 placeholder="e.g., Alapan 1-D"
-                style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px' }}
+                style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '16px' }}
                 autoFocus
               />
             </div>
@@ -515,7 +532,7 @@ const BarangayPopulationManager = () => {
                   value={newBarangay.total_population}
                   onChange={(e) => setNewBarangay({...newBarangay, total_population: e.target.value})}
                   placeholder="0"
-                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '16px' }}
                 />
               </div>
               <div>
@@ -525,7 +542,7 @@ const BarangayPopulationManager = () => {
                   value={newBarangay.total_households}
                   onChange={(e) => setNewBarangay({...newBarangay, total_households: e.target.value})}
                   placeholder="0"
-                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '16px' }}
                 />
               </div>
             </div>
@@ -538,7 +555,7 @@ const BarangayPopulationManager = () => {
                   value={newBarangay.pwd_count}
                   onChange={(e) => setNewBarangay({...newBarangay, pwd_count: e.target.value})}
                   placeholder="0"
-                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '16px' }}
                 />
               </div>
               <div>
@@ -548,7 +565,7 @@ const BarangayPopulationManager = () => {
                   value={newBarangay.senior_count}
                   onChange={(e) => setNewBarangay({...newBarangay, senior_count: e.target.value})}
                   placeholder="0"
-                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '16px' }}
                 />
               </div>
               <div>
@@ -558,21 +575,21 @@ const BarangayPopulationManager = () => {
                   value={newBarangay.child_count}
                   onChange={(e) => setNewBarangay({...newBarangay, child_count: e.target.value})}
                   placeholder="0"
-                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '16px' }}
                 />
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <button
                 onClick={handleAddBarangay}
-                style={{ flex: 1, backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
+                style={{ flex: 1, backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', minHeight: '44px' }}
               >
                 Add Barangay
               </button>
               <button
                 onClick={() => setShowAddModal(false)}
-                style={{ flex: 1, backgroundColor: '#e5e7eb', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer' }}
+                style={{ flex: 1, backgroundColor: '#e5e7eb', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', minHeight: '44px' }}
               >
                 Cancel
               </button>
@@ -581,7 +598,7 @@ const BarangayPopulationManager = () => {
         </div>
       )}
 
-      {/* Footer Note */}
+      {/* Footer Note - Responsive */}
       <div style={{ 
         marginTop: '24px', 
         padding: '16px', 
@@ -589,7 +606,7 @@ const BarangayPopulationManager = () => {
         borderRadius: '8px',
         borderLeft: '4px solid #10b981'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <AlertCircle size={16} color="#10b981" />
           <div style={{ fontSize: '13px', color: '#065f46' }}>
             <strong>Note:</strong> This population data serves as baseline for evacuation coverage calculation in the dashboard. 

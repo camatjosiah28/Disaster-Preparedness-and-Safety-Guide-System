@@ -227,7 +227,6 @@ const UserProfile = ({ refreshTrigger }) => {
                 <Heart size={18} />
                 PWD Information
               </h4>
-              {/* ITO ANG TINANGGAL KO - DISABILITY TYPE */}
               <p>
                 <Activity size={16} />
                 <strong>Mobility Level:</strong> 
