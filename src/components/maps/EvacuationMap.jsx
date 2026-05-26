@@ -31,7 +31,7 @@ const createCustomIcon = (status) => {
   });
 };
 
-// Component for zooming to a specific center - WITHOUT shaking
+// Component for zooming to a specific center
 function ZoomController({ center, mapRef }) {
   const map = useMap();
   
@@ -80,19 +80,15 @@ const EvacuationMap = ({ refreshTrigger }) => {
     
     if (center.plus_code) {
       searchQuery = center.plus_code;
-      console.log('Opening with plus_code:', searchQuery);
     } 
     else if (center.address) {
       searchQuery = center.address;
-      console.log('Opening with address:', searchQuery);
     }
     else if (center.latitude && center.longitude) {
       searchQuery = `${center.latitude},${center.longitude}`;
-      console.log('Opening with coordinates:', searchQuery);
     }
     else {
       searchQuery = center.center_name;
-      console.log('Opening with center name:', searchQuery);
     }
     
     const encodedQuery = encodeURIComponent(searchQuery);
@@ -127,17 +123,111 @@ const EvacuationMap = ({ refreshTrigger }) => {
     }
   };
 
+  // Get occupancy status details
+  const getOccupancyDetails = (center) => {
+    const current = center.current_occupancy || 0;
+    const capacity = center.capacity || 0;
+    const available = capacity - current;
+    const percentage = capacity > 0 ? (current / capacity) * 100 : 0;
+    
+    let statusText = 'Available';
+    let statusColor = '#10b981';
+    let bgColor = '#d1fae5';
+    
+    if (percentage >= 100) {
+      statusText = 'FULL - No Vacancy';
+      statusColor = '#ef4444';
+      bgColor = '#fee2e2';
+    } else if (percentage >= 80) {
+      statusText = 'Critical - Limited Space';
+      statusColor = '#f59e0b';
+      bgColor = '#fed7aa';
+    } else if (percentage >= 50) {
+      statusText = 'Warning - Getting Full';
+      statusColor = '#f97316';
+      bgColor = '#ffedd5';
+    }
+    
+    return { current, capacity, available, percentage, statusText, statusColor, bgColor };
+  };
+
+  // Calculate summary statistics
+  const summary = centers.reduce((acc, center) => {
+    const details = getOccupancyDetails(center);
+    acc.total++;
+    acc.totalEvacuees += details.current;
+    acc.totalCapacity += details.capacity;
+    acc.availableBeds += details.available;
+    if (details.percentage >= 100) acc.full++;
+    if (details.percentage >= 80 && details.percentage < 100) acc.critical++;
+    return acc;
+  }, { total: 0, totalEvacuees: 0, totalCapacity: 0, availableBeds: 0, full: 0, critical: 0 });
+
   if (loading) {
     return <div className="loading-map" style={{ textAlign: 'center', padding: '40px' }}>Loading evacuation centers...</div>;
   }
 
   return (
     <div className="evacuation-map-container">
-      {/* Map Container - Responsive height */}
-      <div className="map-wrapper" style={{ marginBottom: '30px' }}>
+      
+      {/* OCCUPANCY SUMMARY CARDS - Sa itaas ng mapa */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gap: '12px',
+        marginBottom: '20px'
+      }}>
+        <div style={{
+          background: 'white',
+          padding: '12px',
+          borderRadius: '10px',
+          textAlign: 'center',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          borderTop: '3px solid #3b82f6'
+        }}>
+          <div style={{ fontSize: '11px', color: '#666' }}>Total Evacuees</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937' }}>{summary.totalEvacuees.toLocaleString()}</div>
+        </div>
+        <div style={{
+          background: 'white',
+          padding: '12px',
+          borderRadius: '10px',
+          textAlign: 'center',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          borderTop: '3px solid #10b981'
+        }}>
+          <div style={{ fontSize: '11px', color: '#666' }}>Available Beds</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{summary.availableBeds.toLocaleString()}</div>
+        </div>
+        <div style={{
+          background: 'white',
+          padding: '12px',
+          borderRadius: '10px',
+          textAlign: 'center',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          borderTop: '3px solid #f59e0b'
+        }}>
+          <div style={{ fontSize: '11px', color: '#666' }}>Critical Centers</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>{summary.critical}</div>
+        </div>
+        <div style={{
+          background: 'white',
+          padding: '12px',
+          borderRadius: '10px',
+          textAlign: 'center',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          borderTop: '3px solid #ef4444'
+        }}>
+          <div style={{ fontSize: '11px', color: '#666' }}>Full Centers</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>{summary.full}</div>
+        </div>
+      </div>
+
+      {/* Map Container */}
+      <div className="map-wrapper" style={{ marginBottom: '30px', height: '450px', position: 'relative' }}>
         <MapContainer 
-          center={[14.4190, 120.9350]} 
-          zoom={13} 
+          center={[14.4200, 120.9350]} 
+          zoom={14} 
           style={{ height: '100%', width: '100%', borderRadius: '10px' }}
           ref={mapRef}
         >
@@ -213,107 +303,121 @@ const EvacuationMap = ({ refreshTrigger }) => {
         </MapContainer>
       </div>
 
-      {/* List of Evacuation Centers */}
+      {/* LIST OF EVACUATION CENTERS WITH OCCUPANCY STATUS - Sa baba ng mapa */}
       <div className="centers-list">
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
           <MdLocationOn size={24} color="#f44336" />
           List of Evacuation Centers
         </h3>
+        
         <div className="centers-grid">
-          {centers.map((center) => (
-            <div 
-              key={center.center_id} 
-              className="center-card" 
-              onClick={() => zoomToCenter(center)}
-              style={{
-                backgroundColor: selectedCenter?.center_id === center.center_id ? '#e3f2fd' : 'white',
-                borderRadius: '10px',
-                padding: '15px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s, background-color 0.2s',
-                cursor: 'pointer',
-                border: selectedCenter?.center_id === center.center_id ? '2px solid #2196f3' : '1px solid #e0e0e0'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-              }}
-            >
-              <div className="center-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <div className="center-icon" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5', borderRadius: '10px' }}>
-                  {getCenterIcon(center.center_name)}
+          {centers.map((center) => {
+            const occupancy = getOccupancyDetails(center);
+            
+            return (
+              <div 
+                key={center.center_id} 
+                className="center-card" 
+                onClick={() => zoomToCenter(center)}
+                style={{
+                  backgroundColor: selectedCenter?.center_id === center.center_id ? '#e3f2fd' : 'white',
+                  borderRadius: '10px',
+                  padding: '15px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  transition: 'transform 0.2s, background-color 0.2s',
+                  cursor: 'pointer',
+                  border: selectedCenter?.center_id === center.center_id ? '2px solid #2196f3' : '1px solid #e0e0e0'
+                }}
+              >
+                <div className="center-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <div className="center-icon" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5', borderRadius: '10px' }}>
+                    {getCenterIcon(center.center_name)}
+                  </div>
+                  <span 
+                    style={{
+                      padding: '4px 12px',
+                      borderRadius: '20px',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      backgroundColor: occupancy.bgColor,
+                      color: occupancy.statusColor
+                    }}
+                  >
+                    {occupancy.statusText}
+                  </span>
                 </div>
-                <span 
-                  className={`status-badge ${center.status?.toLowerCase() || 'open'}`}
+                
+                <h4 style={{ margin: '10px 0 8px 0', fontSize: '1rem', fontWeight: 'bold' }}>{center.center_name}</h4>
+                <p className="center-address" style={{ margin: '5px 0', fontSize: '12px', color: '#666', display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
+                  <MdLocationOn size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <span>{center.address}</span>
+                </p>
+                
+                {/* OCCUPANCY PROGRESS BAR */}
+                <div style={{ margin: '12px 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                    <span style={{ fontSize: '11px', color: '#666' }}>
+                      Occupancy: {occupancy.current} / {occupancy.capacity}
+                    </span>
+                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: occupancy.statusColor }}>
+                      {occupancy.percentage.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div style={{
+                    width: '100%',
+                    height: '8px',
+                    backgroundColor: '#e5e7eb',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${Math.min(occupancy.percentage, 100)}%`,
+                      height: '100%',
+                      backgroundColor: occupancy.statusColor,
+                      transition: 'width 0.3s ease'
+                    }} />
+                  </div>
+                  {occupancy.available > 0 ? (
+                    <div style={{ fontSize: '11px', color: '#10b981', marginTop: '5px' }}>
+                      ✅ {occupancy.available} available beds
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '11px', color: '#ef4444', marginTop: '5px' }}>
+                      ❌ No available beds
+                    </div>
+                  )}
+                </div>
+                
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openGoogleMaps(center);
+                  }}
+                  className="google-maps-btn"
                   style={{
-                    padding: '4px 12px',
-                    borderRadius: '20px',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    backgroundColor: getStatusColor(center.status),
-                    color: 'white'
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginTop: '12px',
+                    padding: '10px 12px',
+                    backgroundColor: '#1976d2',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    width: '100%',
+                    justifyContent: 'center',
+                    fontSize: '13px',
+                    fontWeight: '500'
                   }}
                 >
-                  {center.status || 'Open'}
-                </span>
+                  <MdDirections size={16} color="white" />
+                  View on Google Maps
+                  <FaExternalLinkAlt size={10} color="white" style={{ opacity: 0.7 }} />
+                </button>
               </div>
-              <h4 style={{ margin: '10px 0 8px 0', fontSize: '1rem', fontWeight: 'bold' }}>{center.center_name}</h4>
-              <p className="center-address" style={{ margin: '5px 0', fontSize: '12px', color: '#666', display: 'flex', alignItems: 'flex-start', gap: '5px' }}>
-                <MdLocationOn size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>{center.address}</span>
-              </p>
-              <p className="center-capacity" style={{ margin: '5px 0', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <MdGroup size={14} color="#4caf50" />
-                <span>{center.capacity} persons</span>
-              </p>
-              {center.contact_number && (
-                <p className="center-contact" style={{ margin: '5px 0', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <MdPhone size={14} color="#2196f3" />
-                  <span>{center.contact_number}</span>
-                </p>
-              )}
-              {center.plus_code && (
-                <p className="center-plus-code" style={{ margin: '5px 0', fontSize: '10px', color: '#999', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <MdLocationOn size={12} />
-                  <span>Plus Code: {center.plus_code}</span>
-                </p>
-              )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openGoogleMaps(center);
-                }}
-                className="google-maps-btn"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginTop: '12px',
-                  padding: '10px 12px',
-                  backgroundColor: '#1976d2',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  width: '100%',
-                  justifyContent: 'center',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
-              >
-                <MdDirections size={16} color="white" />
-                View on Google Maps
-                <FaExternalLinkAlt size={10} color="white" style={{ opacity: 0.7 }} />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

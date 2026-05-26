@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 
 const AlertsManagement = () => {
   const { userProfile } = useAuth();
+  const { showSnackbar } = useSnackbar();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -32,6 +34,7 @@ const AlertsManagement = () => {
       setAlerts(data || []);
     } catch (error) {
       console.error('Error fetching alerts:', error);
+      showSnackbar('Error fetching alerts!', 'error');
     } finally {
       setLoading(false);
     }
@@ -47,12 +50,14 @@ const AlertsManagement = () => {
           .eq('alert_id', editingAlert.alert_id);
         
         if (error) throw error;
+        showSnackbar('Alert updated successfully!', 'success');
       } else {
         const { error } = await supabase
           .from('alerts')
           .insert([{ ...formData, created_by: userProfile?.user_id }]);
         
         if (error) throw error;
+        showSnackbar('Alert sent successfully!', 'success');
       }
       
       fetchAlerts();
@@ -60,7 +65,7 @@ const AlertsManagement = () => {
       resetForm();
     } catch (error) {
       console.error('Error saving alert:', error);
-      alert('Error saving alert. Please try again.');
+      showSnackbar('Error saving alert. Please try again.', 'error');
     }
   };
 
@@ -73,9 +78,11 @@ const AlertsManagement = () => {
           .eq('alert_id', id);
         
         if (error) throw error;
+        showSnackbar('Alert deleted successfully!', 'success');
         fetchAlerts();
       } catch (error) {
         console.error('Error deleting alert:', error);
+        showSnackbar('Error deleting alert!', 'error');
       }
     }
   };

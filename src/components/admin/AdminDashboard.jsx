@@ -19,6 +19,7 @@ import {
   Filler
 } from 'chart.js';
 import { Line, Bar, Pie } from 'react-chartjs-2';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 
 // Register ChartJS components
 ChartJS.register(
@@ -35,6 +36,7 @@ ChartJS.register(
 );
 
 const AdminDashboard = () => {
+  const { showSnackbar } = useSnackbar();
   const [stats, setStats] = useState({
     totalEvacuees: 0,
     activeCenters: 0,
@@ -73,8 +75,10 @@ const AdminDashboard = () => {
       await fetchHistoricalData();
       
       setLastUpdated(new Date());
+      showSnackbar('Dashboard data refreshed successfully!', 'success');
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      showSnackbar('Error refreshing dashboard data!', 'error');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -186,37 +190,44 @@ const AdminDashboard = () => {
   };
 
   const exportToCSV = () => {
-    const csvData = [
-      ['EVACUATION CENTERS REPORT'],
-      ['Generated:', new Date().toLocaleString()],
-      [''],
-      ['SUMMARY METRICS', 'VALUE'],
-      ['Total Evacuees', stats.totalEvacuees],
-      ['Active Centers', stats.activeCenters],
-      ['Total Capacity', stats.totalCapacity],
-      ['Available Beds', stats.availableBeds],
-      ['Overall Occupancy Rate', `${stats.occupancyRate.toFixed(1)}%`],
-      ['Full Centers (100%)', stats.fullCenters],
-      ['Critical Centers (>80%)', stats.criticalCenters],
-      ['Warning Centers (50-80%)', stats.warningCenters],
-      ['Safe Centers (<50%)', stats.safeCenters],
-      ['Active Alerts', stats.activeAlerts],
-      ['Registered PWDs', stats.pwdCount],
-      [''],
-      ['CENTER DETAILS', 'OCCUPANCY', 'CAPACITY', 'RATE', 'STATUS'],
-      ...centerOccupancy.map(c => [c.name, c.occupancy, c.capacity, `${c.rate.toFixed(1)}%`, c.status]),
-      [''],
-      ['TOTAL', stats.totalEvacuees, stats.totalCapacity, `${stats.occupancyRate.toFixed(1)}%`, '']
-    ];
-    
-    const csvString = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvString], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `evacuation-report-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const csvData = [
+        ['EVACUATION CENTERS REPORT'],
+        ['Generated:', new Date().toLocaleString()],
+        [''],
+        ['SUMMARY METRICS', 'VALUE'],
+        ['Total Evacuees', stats.totalEvacuees],
+        ['Active Centers', stats.activeCenters],
+        ['Total Capacity', stats.totalCapacity],
+        ['Available Beds', stats.availableBeds],
+        ['Overall Occupancy Rate', `${stats.occupancyRate.toFixed(1)}%`],
+        ['Full Centers (100%)', stats.fullCenters],
+        ['Critical Centers (>80%)', stats.criticalCenters],
+        ['Warning Centers (50-80%)', stats.warningCenters],
+        ['Safe Centers (<50%)', stats.safeCenters],
+        ['Active Alerts', stats.activeAlerts],
+        ['Registered PWDs', stats.pwdCount],
+        [''],
+        ['CENTER DETAILS', 'OCCUPANCY', 'CAPACITY', 'RATE', 'STATUS'],
+        ...centerOccupancy.map(c => [c.name, c.occupancy, c.capacity, `${c.rate.toFixed(1)}%`, c.status]),
+        [''],
+        ['TOTAL', stats.totalEvacuees, stats.totalCapacity, `${stats.occupancyRate.toFixed(1)}%`, '']
+      ];
+      
+      const csvString = csvData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `evacuation-report-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showSnackbar('Report exported successfully!', 'success');
+    } catch (error) {
+      console.error('Error exporting report:', error);
+      showSnackbar('Error exporting report!', 'error');
+    }
   };
 
   const evacueeTrendChart = {
@@ -716,7 +727,7 @@ const AdminDashboard = () => {
                 <td style={{ padding: '12px', textAlign: 'center' }}></td>
               </tr>
             </tfoot>
-           </table>
+          </table>
         </div>
       </div>
 

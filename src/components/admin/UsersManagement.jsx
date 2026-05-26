@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Edit, Trash2, Shield, UserX } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 
 const UsersManagement = () => {
+  const { showSnackbar } = useSnackbar();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -27,6 +29,7 @@ const UsersManagement = () => {
       setUsers(data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
+      showSnackbar('Error fetching users!', 'error');
     } finally {
       setLoading(false);
     }
@@ -45,10 +48,10 @@ const UsersManagement = () => {
         user.user_id === userId ? { ...user, role: newRole } : user
       ));
       
-      alert(`User role updated to ${newRole}`);
+      showSnackbar(`User role updated to ${newRole}`, 'success');
     } catch (error) {
       console.error('Error updating user role:', error);
-      alert('Error updating user role. Please try again.');
+      showSnackbar('Error updating user role. Please try again.', 'error');
     }
   };
 
@@ -74,11 +77,11 @@ const UsersManagement = () => {
         
         if (error) throw error;
         
+        showSnackbar('User deleted successfully!', 'success');
         fetchUsers();
-        alert('User deleted successfully');
       } catch (error) {
         console.error('Error deleting user:', error);
-        alert('Error deleting user. Please try again.');
+        showSnackbar('Error deleting user. Please try again.', 'error');
       }
     }
   };

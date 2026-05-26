@@ -4,8 +4,10 @@ import {
   Users, Home, Edit2, Trash2, Save, X, Plus, 
   MapPin, Phone, UserCheck, Baby, Heart, AlertCircle
 } from 'lucide-react';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 
 const BarangayPopulationManager = () => {
+  const { showSnackbar } = useSnackbar();
   const [barangays, setBarangays] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
@@ -25,8 +27,6 @@ const BarangayPopulationManager = () => {
     senior_count: '',
     child_count: ''
   });
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     fetchBarangays();
@@ -35,7 +35,6 @@ const BarangayPopulationManager = () => {
   const fetchBarangays = async () => {
     try {
       setLoading(true);
-      setError(null);
       const { data, error } = await supabase
         .from('barangay_population')
         .select('*')
@@ -45,7 +44,7 @@ const BarangayPopulationManager = () => {
       setBarangays(data || []);
     } catch (error) {
       console.error('Error fetching barangays:', error);
-      setError('Failed to load barangay data. Please refresh the page.');
+      showSnackbar('Failed to load barangay data. Please refresh the page.', 'error');
     } finally {
       setLoading(false);
     }
@@ -64,7 +63,6 @@ const BarangayPopulationManager = () => {
 
   const handleSave = async (barangayId) => {
     try {
-      setError(null);
       const { error } = await supabase
         .from('barangay_population')
         .update({
@@ -80,25 +78,21 @@ const BarangayPopulationManager = () => {
       if (error) throw error;
       
       setEditingId(null);
-      setSuccess('Barangay data updated successfully!');
-      setTimeout(() => setSuccess(null), 3000);
+      showSnackbar('Barangay data updated successfully!', 'success');
       fetchBarangays();
     } catch (error) {
       console.error('Error updating:', error);
-      setError('Error updating population data. Please try again.');
-      setTimeout(() => setError(null), 3000);
+      showSnackbar('Error updating population data. Please try again.', 'error');
     }
   };
 
   const handleAddBarangay = async () => {
     if (!newBarangay.barangay_name.trim()) {
-      setError('Please enter barangay name');
-      setTimeout(() => setError(null), 3000);
+      showSnackbar('Please enter barangay name', 'error');
       return;
     }
 
     try {
-      setError(null);
       const { error } = await supabase
         .from('barangay_population')
         .insert([{
@@ -121,20 +115,17 @@ const BarangayPopulationManager = () => {
         senior_count: '',
         child_count: ''
       });
-      setSuccess('Barangay added successfully!');
-      setTimeout(() => setSuccess(null), 3000);
+      showSnackbar('Barangay added successfully!', 'success');
       fetchBarangays();
     } catch (error) {
       console.error('Error adding:', error);
-      setError('Error adding barangay. Please try again.');
-      setTimeout(() => setError(null), 3000);
+      showSnackbar('Error adding barangay. Please try again.', 'error');
     }
   };
 
   const handleDelete = async (barangayId, barangayName) => {
     if (window.confirm(`Are you sure you want to delete ${barangayName}? This action cannot be undone.`)) {
       try {
-        setError(null);
         const { error } = await supabase
           .from('barangay_population')
           .delete()
@@ -142,13 +133,11 @@ const BarangayPopulationManager = () => {
         
         if (error) throw error;
         
-        setSuccess(`${barangayName} deleted successfully!`);
-        setTimeout(() => setSuccess(null), 3000);
+        showSnackbar(`${barangayName} deleted successfully!`, 'success');
         fetchBarangays();
       } catch (error) {
         console.error('Error deleting:', error);
-        setError('Error deleting barangay. Please try again.');
-        setTimeout(() => setError(null), 3000);
+        showSnackbar('Error deleting barangay. Please try again.', 'error');
       }
     }
   };
@@ -237,41 +226,6 @@ const BarangayPopulationManager = () => {
           Add Barangay
         </button>
       </div>
-
-      {/* Success/Error Messages */}
-      {success && (
-        <div style={{
-          backgroundColor: '#d1fae5',
-          borderLeft: '4px solid #10b981',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          flexWrap: 'wrap'
-        }}>
-          <CheckCircle size={18} color="#10b981" />
-          <span style={{ color: '#065f46' }}>{success}</span>
-        </div>
-      )}
-
-      {error && (
-        <div style={{
-          backgroundColor: '#fee2e2',
-          borderLeft: '4px solid #ef4444',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          flexWrap: 'wrap'
-        }}>
-          <AlertCircle size={18} color="#ef4444" />
-          <span style={{ color: '#991b1b' }}>{error}</span>
-        </div>
-      )}
 
       {/* Summary Cards - Responsive Grid */}
       <div style={{ 
@@ -410,25 +364,25 @@ const BarangayPopulationManager = () => {
                         >
                           <X size={14} />
                         </button>
-                       </td>
+                        </td>
                     </>
                   ) : (
                     <>
                       <td style={{ padding: '16px', textAlign: 'right', fontWeight: '500' }}>
                         {barangay.total_population?.toLocaleString()}
-                       </td>
+                        </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.total_households?.toLocaleString()}
-                       </td>
+                        </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.pwd_count?.toLocaleString()}
-                       </td>
+                        </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.senior_count?.toLocaleString()}
-                       </td>
+                        </td>
                       <td style={{ padding: '16px', textAlign: 'right' }}>
                         {barangay.child_count?.toLocaleString()}
-                       </td>
+                        </td>
                       <td style={{ padding: '16px', textAlign: 'center' }}>
                         <button
                           onClick={() => handleEdit(barangay)}
@@ -444,10 +398,10 @@ const BarangayPopulationManager = () => {
                         >
                           <Trash2 size={14} />
                         </button>
-                       </td>
+                        </td>
                     </>
                   )}
-                 </tr>
+                </tr>
               ))}
             </tbody>
             <tfoot style={{ backgroundColor: '#f9fafb', borderTop: '2px solid #e5e7eb', fontWeight: 'bold' }}>
@@ -459,9 +413,9 @@ const BarangayPopulationManager = () => {
                 <td style={{ padding: '16px', textAlign: 'right' }}>{totals.senior_count.toLocaleString()}</td>
                 <td style={{ padding: '16px', textAlign: 'right' }}>{totals.child_count.toLocaleString()}</td>
                 <td style={{ padding: '16px', textAlign: 'center' }}></td>
-               </tr>
+              </tr>
             </tfoot>
-           </table>
+          </table>
         </div>
       </div>
 
@@ -617,13 +571,5 @@ const BarangayPopulationManager = () => {
     </div>
   );
 };
-
-// Import missing CheckCircle component
-const CheckCircle = ({ size, color }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-    <polyline points="22 4 12 14.01 9 11.01" />
-  </svg>
-);
 
 export default BarangayPopulationManager;

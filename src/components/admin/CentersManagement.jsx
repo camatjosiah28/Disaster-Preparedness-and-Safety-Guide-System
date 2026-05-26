@@ -3,8 +3,10 @@ import { supabase } from '../../supabaseClient';
 // Import professional icons
 import { MdPhone, MdGroup, MdLocationOn, MdDirections, MdSchool, MdBusiness, MdSportsCricket, MdShield, MdAdd, MdEdit, MdDelete, MdPeople, MdTrendingUp, MdTrendingDown } from 'react-icons/md';
 import { FaExternalLinkAlt, FaGoogle, FaWaze } from 'react-icons/fa';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 
 const CentersManagement = ({ refreshTrigger }) => {
+  const { showSnackbar } = useSnackbar();
   const [centers, setCenters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -39,10 +41,11 @@ const CentersManagement = ({ refreshTrigger }) => {
       setCenters(data || []);
     } catch (error) {
       console.error('Error fetching centers:', error);
+      showSnackbar('Error fetching evacuation centers!', 'error');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showSnackbar]);
 
   useEffect(() => {
     fetchCenters();
@@ -89,7 +92,7 @@ const CentersManagement = ({ refreshTrigger }) => {
     } else if (center.address) {
       searchQuery = center.address;
     } else {
-      alert('No location data available for this center.');
+      showSnackbar('No location data available for this center.', 'error');
       return;
     }
     
@@ -104,7 +107,7 @@ const CentersManagement = ({ refreshTrigger }) => {
       const encodedAddress = encodeURIComponent(center.address);
       window.open(`https://www.waze.com/ul?q=${encodedAddress}&navigate=yes`, '_blank');
     } else {
-      alert('No location data available for this center.');
+      showSnackbar('No location data available for this center.', 'error');
     }
   };
 
@@ -125,7 +128,7 @@ const CentersManagement = ({ refreshTrigger }) => {
     }
     
     if (newOccupancy < 0) {
-      alert('Occupancy cannot be negative!');
+      showSnackbar('Occupancy cannot be negative!', 'error');
       return;
     }
     
@@ -149,11 +152,11 @@ const CentersManagement = ({ refreshTrigger }) => {
       await fetchCenters();
       setShowOccupancyModal(false);
       setSelectedCenter(null);
-      alert(`Occupancy updated successfully! New count: ${newOccupancy}`);
+      showSnackbar(`Occupancy updated successfully! New count: ${newOccupancy}`, 'success');
       
     } catch (error) {
       console.error('Error updating occupancy:', error);
-      alert('Error updating occupancy: ' + error.message);
+      showSnackbar('Error updating occupancy: ' + error.message, 'error');
     }
   };
 
@@ -186,14 +189,14 @@ const CentersManagement = ({ refreshTrigger }) => {
           .eq('center_id', editingCenter.center_id);
         
         if (error) throw error;
-        alert('Center updated successfully!');
+        showSnackbar('Center updated successfully!', 'success');
       } else {
         const { error } = await supabase
           .from('evacuation_centers')
           .insert([centerData]);
         
         if (error) throw error;
-        alert('Center created successfully!');
+        showSnackbar('Center created successfully!', 'success');
       }
       
       await fetchCenters();
@@ -202,7 +205,7 @@ const CentersManagement = ({ refreshTrigger }) => {
       
     } catch (error) {
       console.error('Error saving center:', error);
-      alert('Error saving center: ' + error.message);
+      showSnackbar('Error saving center: ' + error.message, 'error');
     }
   };
 
@@ -215,11 +218,11 @@ const CentersManagement = ({ refreshTrigger }) => {
           .eq('center_id', id);
         
         if (error) throw error;
-        alert('Center deleted successfully!');
+        showSnackbar('Center deleted successfully!', 'success');
         fetchCenters();
       } catch (error) {
         console.error('Error deleting center:', error);
-        alert('Error deleting center. Please try again.');
+        showSnackbar('Error deleting center. Please try again.', 'error');
       }
     }
   };

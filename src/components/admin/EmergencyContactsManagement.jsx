@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 
 const EmergencyContactsManagement = () => {
+  const { showSnackbar } = useSnackbar();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -29,6 +31,7 @@ const EmergencyContactsManagement = () => {
       setContacts(data || []);
     } catch (error) {
       console.error('Error fetching contacts:', error);
+      showSnackbar('Error fetching emergency contacts!', 'error');
     } finally {
       setLoading(false);
     }
@@ -44,12 +47,14 @@ const EmergencyContactsManagement = () => {
           .eq('contact_id', editingContact.contact_id);
         
         if (error) throw error;
+        showSnackbar('Contact updated successfully!', 'success');
       } else {
         const { error } = await supabase
           .from('emergency_contacts')
           .insert([formData]);
         
         if (error) throw error;
+        showSnackbar('Contact added successfully!', 'success');
       }
       
       fetchContacts();
@@ -57,7 +62,7 @@ const EmergencyContactsManagement = () => {
       resetForm();
     } catch (error) {
       console.error('Error saving contact:', error);
-      alert('Error saving contact. Please try again.');
+      showSnackbar('Error saving contact. Please try again.', 'error');
     }
   };
 
@@ -70,9 +75,11 @@ const EmergencyContactsManagement = () => {
           .eq('contact_id', id);
         
         if (error) throw error;
+        showSnackbar('Contact deleted successfully!', 'success');
         fetchContacts();
       } catch (error) {
         console.error('Error deleting contact:', error);
+        showSnackbar('Error deleting contact. Please try again.', 'error');
       }
     }
   };

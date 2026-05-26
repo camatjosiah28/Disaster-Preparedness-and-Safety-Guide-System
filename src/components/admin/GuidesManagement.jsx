@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Youtube, Image } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 
 const GuidesManagement = () => {
   const { userProfile } = useAuth();
+  const { showSnackbar } = useSnackbar();
   const [guides, setGuides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -33,6 +35,7 @@ const GuidesManagement = () => {
       setGuides(data || []);
     } catch (error) {
       console.error('Error fetching guides:', error);
+      showSnackbar('Error fetching preparedness guides!', 'error');
     } finally {
       setLoading(false);
     }
@@ -48,12 +51,14 @@ const GuidesManagement = () => {
           .eq('guide_id', editingGuide.guide_id);
         
         if (error) throw error;
+        showSnackbar('Guide updated successfully!', 'success');
       } else {
         const { error } = await supabase
           .from('preparedness_guides')
           .insert([{ ...formData, created_by: userProfile?.user_id }]);
         
         if (error) throw error;
+        showSnackbar('Guide created successfully!', 'success');
       }
       
       fetchGuides();
@@ -61,7 +66,7 @@ const GuidesManagement = () => {
       resetForm();
     } catch (error) {
       console.error('Error saving guide:', error);
-      alert('Error saving guide. Please try again.');
+      showSnackbar('Error saving guide. Please try again.', 'error');
     }
   };
 
@@ -74,10 +79,11 @@ const GuidesManagement = () => {
           .eq('guide_id', id);
         
         if (error) throw error;
+        showSnackbar('Guide deleted successfully!', 'success');
         fetchGuides();
       } catch (error) {
         console.error('Error deleting guide:', error);
-        alert('Error deleting guide. Please try again.');
+        showSnackbar('Error deleting guide. Please try again.', 'error');
       }
     }
   };

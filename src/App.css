@@ -585,7 +585,152 @@ select.auth-input {
 .leaflet-bottom {
   z-index: 1000 !important;
 }
+/* Summary Cards Responsive */
+@media (max-width: 640px) {
+  .evacuation-map-container > div:first-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  .evacuation-map-container > div:first-child > div {
+    padding: 8px !important;
+  }
+  
+  .evacuation-map-container > div:first-child > div > div:first-child {
+    font-size: 10px !important;
+  }
+  
+  .evacuation-map-container > div:first-child > div > div:last-child {
+    font-size: 20px !important;
+  }
+}
+/* ========== PWD MANAGEMENT - RESPONSIVE WITH EXPANDABLE ROW ========== */
 
+/* Priority Summary Cards - Mobile */
+@media (max-width: 640px) {
+  .pwd-management-container > div:first-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  
+  .pwd-management-container > div:first-child > div {
+    padding: 8px !important;
+  }
+  
+  .pwd-management-container > div:first-child > div > div:first-child {
+    font-size: 9px !important;
+  }
+  
+  .pwd-management-container > div:first-child > div > div:nth-child(2) {
+    font-size: 18px !important;
+  }
+  
+  .pwd-management-container > div:first-child > div > div:last-child {
+    font-size: 9px !important;
+  }
+}
+
+/* Expanded Details Grid - Mobile Responsive */
+@media (max-width: 768px) {
+  table tr td > div > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 16px !important;
+  }
+  
+  table tr td h4 {
+    font-size: 13px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  table tr td p {
+    font-size: 12px !important;
+    margin: 6px 0 !important;
+  }
+  
+  table tr td p strong {
+    min-width: auto !important;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .pwd-management-container > div:first-child {
+    gap: 6px !important;
+  }
+  
+  .pwd-management-container > div:first-child > div {
+    padding: 6px !important;
+  }
+  
+  .pwd-management-container > div:first-child > div > div:first-child {
+    font-size: 8px !important;
+  }
+  
+  .pwd-management-container > div:first-child > div > div:nth-child(2) {
+    font-size: 16px !important;
+  }
+  
+  table tr td > div > div {
+    padding: 12px !important;
+  }
+  
+  table tr td p {
+    font-size: 11px !important;
+  }
+  
+  table tr td p svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  table td span {
+    font-size: 9px !important;
+    padding: 2px 6px !important;
+  }
+  
+  table td {
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .pwd-management-container > div:first-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Expand button touch-friendly */
+@media (max-width: 768px) {
+  table button {
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+  
+  table button svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+
+/* Address column fix */
+@media (max-width: 768px) {
+  .admin-table-container {
+    overflow-x: auto;
+  }
+  
+  table td:nth-child(4) {
+    max-width: 150px !important;
+  }
+  
+  table td:nth-child(4) span {
+    font-size: 10px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+}
 /* Custom marker bounce animation */
 @keyframes bounce {
   0%, 100% { transform: rotate(-45deg) translateY(0); }
