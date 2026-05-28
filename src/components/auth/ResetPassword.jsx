@@ -13,21 +13,43 @@ const ResetPassword = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   
-  // Password validation states
   const [hasUppercase, setHasUppercase] = useState(false);
   const [hasNumber, setHasNumber] = useState(false);
   const [hasMinLength, setHasMinLength] = useState(false);
 
   useEffect(() => {
-    // Check if user came from reset link
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    const handleResetSession = async () => {
+      // Kunin ang access token mula sa URL hash
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
       
-      if (!session) {
-        setError('Invalid or expired reset link. Please request a new one.');
+      console.log('Access token found:', accessToken ? 'Yes' : 'No');
+      console.log('Current URL:', window.location.href);
+      
+      if (accessToken) {
+        // I-set ang session gamit ang token
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+        });
+        
+        if (error) {
+          console.error('Session error:', error);
+          setError('Invalid or expired reset link. Please request a new one.');
+        } else {
+          console.log('Session set successfully');
+        }
+      } else {
+        // Check kung may existing session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          setError('Invalid or expired reset link. Please request a new one.');
+        }
       }
     };
-    checkSession();
+    
+    handleResetSession();
   }, []);
 
   const validatePassword = (pass) => {
@@ -68,7 +90,6 @@ const ResetPassword = () => {
     setIsLoading(true);
     
     try {
-      // Update password
       const { error } = await supabase.auth.updateUser({ 
         password: password 
       });
@@ -78,10 +99,8 @@ const ResetPassword = () => {
       setSuccess(true);
       showSnackbar('Password reset successfully! Please login with your new password.', 'success');
       
-      // Sign out
       await supabase.auth.signOut();
       
-      // Redirect after 3 seconds
       setTimeout(() => {
         window.location.href = '/login';
       }, 3000);
@@ -150,7 +169,7 @@ const ResetPassword = () => {
           {logoSrc ? (
             <img src={logoSrc} alt="Alapan Ready Logo" className="auth-logo" />
           ) : (
-            <Shield size={60} color="var(--danger)" />
+            <Shield size={60} color="var(--danger" />
           )}
         </div>
         
@@ -161,7 +180,6 @@ const ResetPassword = () => {
           Enter your new password below
         </p>
         
-        {/* Password Requirements Box */}
         <div style={{
           background: '#f5f5f5',
           padding: '12px',
@@ -189,7 +207,6 @@ const ResetPassword = () => {
         </div>
         
         <form onSubmit={handleResetPassword}>
-          {/* New Password */}
           <div style={{ position: 'relative', width: '100%', marginBottom: '15px' }}>
             <input 
               type={showPassword ? "text" : "password"} 
@@ -220,7 +237,6 @@ const ResetPassword = () => {
             </button>
           </div>
           
-          {/* Confirm Password */}
           <div style={{ position: 'relative', width: '100%', marginBottom: '20px' }}>
             <input 
               type={showConfirmPassword ? "text" : "password"} 
@@ -255,9 +271,6 @@ const ResetPassword = () => {
             type="submit"
             className="btn-main"
             disabled={isLoading || !hasUppercase || !hasNumber || !hasMinLength}
-            style={{
-              opacity: (isLoading || !hasUppercase || !hasNumber || !hasMinLength) ? 0.6 : 1
-            }}
           >
             {isLoading ? 'Resetting...' : 'Reset Password'}
           </button>

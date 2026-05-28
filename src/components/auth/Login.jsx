@@ -114,10 +114,9 @@ const Login = ({ setView }) => {
         return;
       }
       
-      // Send password reset email using Supabase
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+  redirectTo: 'https://disaster-preparedness-and-safety-guide.vercel.app/reset-password',
+});
       
       if (error) throw error;
       
