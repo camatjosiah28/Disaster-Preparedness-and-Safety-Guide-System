@@ -11,7 +11,6 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
   
   const [hasUppercase, setHasUppercase] = useState(false);
   const [hasNumber, setHasNumber] = useState(false);
@@ -19,38 +18,53 @@ const ResetPassword = () => {
 
   useEffect(() => {
     const handleResetSession = async () => {
-      // Kunin ang access token mula sa URL hash
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      // Get the full URL
+      const fullUrl = window.location.href;
+      console.log('Full URL:', fullUrl);
+      
+      // Extract token from hash
+      const hash = window.location.hash;
+      console.log('Hash:', hash);
+      
+      // Remove the leading '#'
+      const hashParams = new URLSearchParams(hash.substring(1));
       const accessToken = hashParams.get('access_token');
       const refreshToken = hashParams.get('refresh_token');
+      const type = hashParams.get('type');
       
       console.log('Access token found:', accessToken ? 'Yes' : 'No');
-      console.log('Current URL:', window.location.href);
+      console.log('Type:', type);
       
       if (accessToken) {
-        // I-set ang session gamit ang token
-        const { error } = await supabase.auth.setSession({
+        // Set the session
+        const { data, error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken || '',
         });
         
         if (error) {
           console.error('Session error:', error);
-          setError('Invalid or expired reset link. Please request a new one.');
+          showSnackbar('Invalid or expired reset link. Please request a new one.', 'error');
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 2000);
         } else {
           console.log('Session set successfully');
         }
       } else {
-        // Check kung may existing session
+        // Check if there's an existing session
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          setError('Invalid or expired reset link. Please request a new one.');
+          showSnackbar('Invalid or expired reset link. Please request a new one.', 'error');
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 2000);
         }
       }
     };
     
     handleResetSession();
-  }, []);
+  }, [showSnackbar]);
 
   const validatePassword = (pass) => {
     setHasUppercase(/[A-Z]/.test(pass));
@@ -120,48 +134,6 @@ const ResetPassword = () => {
     logoSrc = null;
   }
 
-  if (error) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card" style={{ textAlign: 'center' }}>
-          <Shield size={60} color="#f44336" style={{ marginBottom: '20px' }} />
-          <h2 style={{ marginBottom: '10px' }}>Invalid Reset Link</h2>
-          <p style={{ marginBottom: '20px', color: 'var(--gray-dark)' }}>{error}</p>
-          <button 
-            onClick={() => window.location.href = '/login'}
-            className="btn-main"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-          >
-            <ArrowLeft size={18} />
-            Back to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (success) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card" style={{ textAlign: 'center' }}>
-          <CheckCircle size={60} color="#2e7d32" style={{ marginBottom: '20px' }} />
-          <h2 style={{ marginBottom: '10px' }}>Password Reset Successfully!</h2>
-          <p style={{ marginBottom: '20px', color: 'var(--gray-dark)' }}>
-            Your password has been updated. Redirecting to login...
-          </p>
-          <button 
-            onClick={() => window.location.href = '/login'}
-            className="btn-main"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-          >
-            <ArrowLeft size={18} />
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -169,7 +141,7 @@ const ResetPassword = () => {
           {logoSrc ? (
             <img src={logoSrc} alt="Alapan Ready Logo" className="auth-logo" />
           ) : (
-            <Shield size={60} color="var(--danger" />
+            <Shield size={60} color="var(--danger)" />
           )}
         </div>
         
