@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import ResetPassword from './components/auth/ResetPassword';
 import AlertsList from './components/home/AlertsList';
 import EmergencyContacts from './components/home/EmergencyContacts';
 import EvacuationMap from './components/maps/EvacuationMap';
@@ -13,7 +14,7 @@ import UserProfile from './components/profile/UserProfile';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import CentersManagement from './components/admin/CentersManagement';
-import BarangayPopulationManager from './components/admin/BarangayPopulationManager'; // ✅ IMPORT ITO
+import BarangayPopulationManager from './components/admin/BarangayPopulationManager';
 import AlertsManagement from './components/admin/AlertsManagement';
 import PWDManagement from './components/admin/PWDManagement';
 import EmergencyContactsManagement from './components/admin/EmergencyContactsManagement';
@@ -149,40 +150,62 @@ function AppContent() {
   if (user && isAdmin) {
     console.log('👑 Rendering Admin Interface');
     return (
-      <Routes>
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="centers" element={<CentersManagement />} />
-          <Route path="population" element={<BarangayPopulationManager />} />  {/* ✅ IDAGDAG ITO */}
-          <Route path="alerts" element={<AlertsManagement />} />
-          <Route path="pwd" element={<PWDManagement />} />
-          <Route path="contacts" element={<EmergencyContactsManagement />} />
-          <Route path="guides" element={<GuidesManagement />} />
-          <Route path="users" element={<UsersManagement />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/admin" replace />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="centers" element={<CentersManagement />} />
+            <Route path="population" element={<BarangayPopulationManager />} />
+            <Route path="alerts" element={<AlertsManagement />} />
+            <Route path="pwd" element={<PWDManagement />} />
+            <Route path="contacts" element={<EmergencyContactsManagement />} />
+            <Route path="guides" element={<GuidesManagement />} />
+            <Route path="users" element={<UsersManagement />} />
+          </Route>
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="*" element={<Navigate to="/admin" replace />} />
+        </Routes>
+      </>
     );
   }
 
   // Show login page
   if (view === 'login') {
-    return <Login setView={setView} />;
+    return (
+      <>
+        <Routes>
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="*" element={<Login setView={setView} />} />
+        </Routes>
+      </>
+    );
   }
 
   // Show register page
   if (view === 'register') {
-    return <Register setView={setView} />;
+    return (
+      <>
+        <Routes>
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="*" element={<Register setView={setView} />} />
+        </Routes>
+      </>
+    );
   }
 
   // Show user app (guest or logged in resident)
   console.log('👤 Rendering User Interface');
   return (
-    <UserApp 
-      setView={setView} 
-      activeTab={activeTab} 
-      setActiveTab={setActiveTab} 
-    />
+    <>
+      <Routes>
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Routes>
+      <UserApp 
+        setView={setView} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+      />
+    </>
   );
 }
 

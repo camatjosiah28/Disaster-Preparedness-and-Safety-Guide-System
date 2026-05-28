@@ -47,7 +47,7 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
         gap: '8px'
       }}>
         {getMobilityIcon()}
-        PWD Information (Optional)
+        PWD Information
       </h4>
       
       <div style={{ marginBottom: '15px' }}>
@@ -57,7 +57,7 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
           fontWeight: '500',
           color: '#495057'
         }}>
-          Level of Assistance Needed
+          Level of Assistance Needed *
         </label>
         <select
           name="mobilityLevel"
@@ -100,7 +100,7 @@ const PWDRegistration = ({ formData, handleChange, handleCheckbox, loading }) =>
         <input
           name="deviceDetails"
           type="text"
-          placeholder="Specify medical device/s"
+          placeholder="Specify medical device/s (e.g., wheelchair, oxygen tank)"
           value={formData.deviceDetails || ''}
           onChange={onInputChange}
           disabled={loading}

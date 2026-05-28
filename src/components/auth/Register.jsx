@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
+import { useSnackbar } from '../../contexts/SnackbarContext';
 import PWDRegistration from './PWDRegistration';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Register = ({ setView }) => {
+  const { showSnackbar } = useSnackbar();
   const initialState = {
     fullName: '',
     email: '',
@@ -21,10 +23,6 @@ const Register = ({ setView }) => {
 
   const [formData, setFormData] = useState(initialState);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [phoneError, setPhoneError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const barangays = [
@@ -152,13 +150,6 @@ const Register = ({ setView }) => {
   const handleEmailChange = (e) => {
     const { value } = e.target;
     setFormData(prev => ({ ...prev, email: value }));
-    if (value) {
-      const emailValidationError = validateEmail(value);
-      setEmailError(emailValidationError);
-    } else {
-      setEmailError('');
-    }
-    setError('');
   };
 
   const handlePhoneChange = (e) => {
@@ -167,14 +158,6 @@ const Register = ({ setView }) => {
     if (value.length > 11) value = value.slice(0, 11);
     
     setFormData(prev => ({ ...prev, contactNumber: value }));
-    
-    if (value) {
-      const phoneValidationError = validatePhilippineNumber(value);
-      setPhoneError(phoneValidationError);
-    } else {
-      setPhoneError('');
-    }
-    setError('');
   };
 
   const handleChange = (e) => {
@@ -183,55 +166,52 @@ const Register = ({ setView }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    setError('');
   };
 
   const validateForm = () => {
     const { fullName, email, password, contactNumber, address, street, isPWD, mobilityLevel, emergencyContactName, emergencyContactNumber } = formData;
     
     if (!fullName || !email || !password || !contactNumber || !address || !street) {
-      setError('Please fill in all required fields');
+      showSnackbar('Please fill in all required fields', 'error');
       return false;
     }
 
     const emailValidationError = validateEmail(email);
     if (emailValidationError) {
-      setEmailError(emailValidationError);
-      setError(emailValidationError);
+      showSnackbar(emailValidationError, 'error');
       return false;
     }
 
     const phoneValidationError = validatePhilippineNumber(contactNumber);
     if (phoneValidationError) {
-      setPhoneError(phoneValidationError);
-      setError(phoneValidationError);
+      showSnackbar(phoneValidationError, 'error');
       return false;
     }
 
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.isValid) {
-      setError('Password must have at least 6 characters, 1 uppercase letter, and 1 number');
+      showSnackbar('Password must have at least 6 characters, 1 uppercase letter, and 1 number', 'error');
       return false;
     }
 
     if (isPWD) {
       if (!mobilityLevel) {
-        setError('Please select level of assistance needed for PWD registration');
+        showSnackbar('Please select level of assistance needed for PWD registration', 'error');
         return false;
       }
       
       if (!emergencyContactName) {
-        setError('Please provide emergency contact name for PWD registration');
+        showSnackbar('Please provide emergency contact name for PWD registration', 'error');
         return false;
       }
       
       if (!emergencyContactNumber) {
-        setError('Please provide emergency contact number for PWD registration');
+        showSnackbar('Please provide emergency contact number for PWD registration', 'error');
         return false;
       }
 
       if (formData.needsMedicalDevice && !formData.deviceDetails) {
-        setError('Please specify medical device/s needed');
+        showSnackbar('Please specify medical device/s needed', 'error');
         return false;
       }
     }
@@ -250,11 +230,6 @@ const Register = ({ setView }) => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    
-    setError('');
-    setSuccess('');
-    setEmailError('');
-    setPhoneError('');
     
     if (!validateForm()) return;
 
@@ -349,7 +324,7 @@ const Register = ({ setView }) => {
         console.log('Trigger inserted user automatically, userId:', userId);
       }
 
-      // STEP 5: Insert PWD record if applicable (GUMAAGANA NA ITO)
+      // STEP 5: Insert PWD record if applicable
       if (formData.isPWD && userId) {
         const cleanedEmergencyNumber = cleanPhoneNumber(formData.emergencyContactNumber);
         
@@ -382,10 +357,8 @@ const Register = ({ setView }) => {
       // STEP 6: Sign out the user
       await supabase.auth.signOut();
 
-      setSuccess('Registration Successful! Please check your email to confirm your account, then login.');
+      showSnackbar('Registration successful! Please check your email to confirm your account, then login.', 'success');
       setFormData(initialState);
-      setEmailError('');
-      setPhoneError('');
       setShowPassword(false);
       
       setTimeout(() => {
@@ -394,7 +367,7 @@ const Register = ({ setView }) => {
       
     } catch (error) {
       console.error('Registration error:', error);
-      setError(error.message || 'Registration failed. Please try again.');
+      showSnackbar(error.message || 'Registration failed. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -420,34 +393,6 @@ const Register = ({ setView }) => {
         }}>
           Resident Registration
         </h2>
-        
-        {error && (
-          <div style={{
-            background: '#fff3e0',
-            borderLeft: '4px solid #ff9800',
-            color: '#e65100',
-            padding: '10px 12px',
-            borderRadius: '4px',
-            marginBottom: '15px',
-            fontSize: '0.9rem'
-          }}>
-            ⚠️ {error}
-          </div>
-        )}
-        
-        {success && (
-          <div style={{
-            background: '#e8f5e9',
-            borderLeft: '4px solid #4caf50',
-            color: '#2e7d32',
-            padding: '10px 12px',
-            borderRadius: '4px',
-            marginBottom: '15px',
-            fontSize: '0.9rem'
-          }}>
-            ✓ {success}
-          </div>
-        )}
 
         <form onSubmit={handleRegister}>
           <input 
@@ -470,14 +415,8 @@ const Register = ({ setView }) => {
               value={formData.email}
               onChange={handleEmailChange}
               disabled={loading}
-              style={{ borderColor: emailError ? '#ff9800' : undefined }}
               required
             />
-            {emailError && (
-              <div style={{ fontSize: '0.75rem', color: '#e65100', marginTop: '4px', marginLeft: '4px' }}>
-                ⚠️ {emailError}
-              </div>
-            )}
           </div>
           
           <div style={{ position: 'relative' }}>
@@ -544,14 +483,8 @@ const Register = ({ setView }) => {
               value={formData.contactNumber}
               onChange={handlePhoneChange}
               disabled={loading}
-              style={{ borderColor: phoneError ? '#ff9800' : undefined }}
               required
             />
-            {phoneError && (
-              <div style={{ fontSize: '0.75rem', color: '#e65100', marginTop: '4px', marginLeft: '4px' }}>
-                ⚠️ {phoneError}
-              </div>
-            )}
           </div>
           
           <input 
