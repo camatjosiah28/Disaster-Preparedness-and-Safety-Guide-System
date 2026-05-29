@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   LayoutDashboard, Building2, AlertTriangle, Phone, BookOpen, 
-  Users, Heart, X, MapPin
+  Users, Heart, X, MapPin, Shield
 } from 'lucide-react';
 
 const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) => {
@@ -15,16 +15,13 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
     { id: 'pwd', label: 'PWD Registry', icon: Heart, path: '/admin/pwd' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
   ];
-
   const handleNavigation = (item) => {
     setActiveTab(item.id);
-    // Close sidebar after navigation on all devices
     setSidebarOpen(false);
   };
 
   return (
     <>
-      {/* Overlay - lumalabas kapag open yung sidebar */}
       {sidebarOpen && (
         <div 
           className="admin-sidebar-overlay"
@@ -41,7 +38,6 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
         />
       )}
       
-      {/* Sidebar */}
       <aside 
         className="admin-sidebar"
         style={{
@@ -59,7 +55,6 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
           boxShadow: '2px 0 10px rgba(0,0,0,0.1)'
         }}
       >
-        {/* Close button */}
         <div 
           className="sidebar-close-btn"
           onClick={() => setSidebarOpen(false)}
@@ -90,7 +85,6 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
         </div>
 
         <div style={{ padding: '20px 0' }}>
-          {/* Sidebar Header */}
           <div style={{ padding: '0 20px 20px 20px', borderBottom: '1px solid #2a2a3e', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
@@ -102,7 +96,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <span style={{ fontSize: '20px' }}>🛡️</span>
+                <Shield size={22} color="white" />
               </div>
               <div>
                 <div style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>Admin Panel</div>
@@ -110,8 +104,6 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
               </div>
             </div>
           </div>
-
-          {/* Menu Items */}
           <nav>
             {menuItems.map((item) => {
               const Icon = item.icon;
