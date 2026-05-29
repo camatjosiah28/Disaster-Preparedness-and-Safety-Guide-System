@@ -3,12 +3,9 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { supabase } from '../../supabaseClient';
 import 'leaflet/dist/leaflet.css';
-
-// Import professional icons
 import { MdPhone, MdGroup, MdLocationOn, MdDirections, MdSchool, MdBusiness, MdSportsCricket, MdShield } from 'react-icons/md';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
-// IMPORTANT: Fix para sa Leaflet markers sa production
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -17,7 +14,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-// Custom marker icon
 const createCustomIcon = (status) => {
   const color = status?.toLowerCase() === 'closed' ? '#f44336' : '#4caf50';
   return L.divIcon({
@@ -31,7 +27,6 @@ const createCustomIcon = (status) => {
   });
 };
 
-// Component for zooming to a specific center
 function ZoomController({ center, mapRef }) {
   const map = useMap();
   
@@ -123,7 +118,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
     }
   };
 
-  // Get occupancy status details
   const getOccupancyDetails = (center) => {
     const current = center.current_occupancy || 0;
     const capacity = center.capacity || 0;
@@ -150,8 +144,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
     
     return { current, capacity, available, percentage, statusText, statusColor, bgColor };
   };
-
-  // Calculate summary statistics
   const summary = centers.reduce((acc, center) => {
     const details = getOccupancyDetails(center);
     acc.total++;
@@ -170,7 +162,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
   return (
     <div className="evacuation-map-container">
       
-      {/* OCCUPANCY SUMMARY CARDS - Sa itaas ng mapa */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
@@ -303,7 +294,6 @@ const EvacuationMap = ({ refreshTrigger }) => {
         </MapContainer>
       </div>
 
-      {/* LIST OF EVACUATION CENTERS WITH OCCUPANCY STATUS - Sa baba ng mapa */}
       <div className="centers-list">
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
           <MdLocationOn size={24} color="#f44336" />

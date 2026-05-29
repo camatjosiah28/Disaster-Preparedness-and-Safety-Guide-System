@@ -153,7 +153,7 @@ const BarangayPopulationManager = () => {
     });
   };
 
-  // Calculate totals
+  // Calculate ng totals
   const totals = barangays.reduce((acc, b) => ({
     total_population: acc.total_population + (b.total_population || 0),
     total_households: acc.total_households + (b.total_households || 0),

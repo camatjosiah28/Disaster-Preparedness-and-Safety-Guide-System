@@ -24,7 +24,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab }) 
 
   return (
     <>
-      {/* Overlay - lumalabas kapag open ang sidebar */}
+      {/* Overlay - lumalabas kapag open yung sidebar */}
       {sidebarOpen && (
         <div 
           className="admin-sidebar-overlay"

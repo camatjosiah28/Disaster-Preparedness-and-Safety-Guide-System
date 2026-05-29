@@ -20,19 +20,13 @@ import PWDManagement from './components/admin/PWDManagement';
 import EmergencyContactsManagement from './components/admin/EmergencyContactsManagement';
 import GuidesManagement from './components/admin/GuidesManagement';
 import UsersManagement from './components/admin/UsersManagement';
-
-// Import professional icons
 import { MdCampaign, MdLocalHospital, MdMap, MdBook, MdPhone, MdPerson } from 'react-icons/md';
 import { FaShieldAlt, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
-
 import './App.css';
 
-// User App Component
 function UserApp({ setView, activeTab, setActiveTab }) {
   const { user } = useAuth();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  // Trigger refresh when tab changes
   useEffect(() => {
     console.log('Tab changed to:', activeTab);
     setRefreshTrigger(prev => prev + 1);
@@ -121,13 +115,11 @@ function UserApp({ setView, activeTab, setActiveTab }) {
   );
 }
 
-// Main App Content with routing
 function AppContent() {
   const [view, setView] = useState('guest');
   const [activeTab, setActiveTab] = useState('home');
   const { user, loading, isAdmin, userProfile } = useAuth();
 
-  // Debug logging
   useEffect(() => {
     console.log('=== AppContent State ===');
     console.log('User:', user?.email);
@@ -146,7 +138,6 @@ function AppContent() {
     );
   }
 
-  // If user is admin, show admin interface
   if (user && isAdmin) {
     console.log('👑 Rendering Admin Interface');
     return (
@@ -169,7 +160,6 @@ function AppContent() {
     );
   }
 
-  // Show login page
   if (view === 'login') {
     return (
       <>
@@ -181,7 +171,6 @@ function AppContent() {
     );
   }
 
-  // Show register page
   if (view === 'register') {
     return (
       <>
@@ -193,7 +182,6 @@ function AppContent() {
     );
   }
 
-  // Show user app (guest or logged in resident)
   console.log('👤 Rendering User Interface');
   return (
     <>
@@ -209,7 +197,6 @@ function AppContent() {
   );
 }
 
-// Main App
 function App() {
   return (
     <Router>

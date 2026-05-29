@@ -5,7 +5,6 @@ const SnackbarContext = createContext();
 
 export const useSnackbar = () => useContext(SnackbarContext);
 
-// Snackbar component mismo sa loob ng context
 const SnackbarComponent = ({ message, type, onClose, duration = 3000 }) => {
   useEffect(() => {
     const timer = setTimeout(() => {

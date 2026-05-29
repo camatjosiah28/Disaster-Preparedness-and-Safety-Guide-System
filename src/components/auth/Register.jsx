@@ -240,7 +240,6 @@ const Register = ({ setView }) => {
       const cleanedPhone = cleanPhoneNumber(formData.contactNumber);
       const emailToUse = formData.email.trim().toLowerCase();
       
-      // STEP 1: Check if email exists in public.users
       const { data: existingUser } = await supabase
         .from('users')
         .select('email')
@@ -251,7 +250,6 @@ const Register = ({ setView }) => {
         throw new Error('Email already registered. Please login instead.');
       }
       
-      // STEP 2: Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: emailToUse,
         password: formData.password,
@@ -324,7 +322,6 @@ const Register = ({ setView }) => {
         console.log('Trigger inserted user automatically, userId:', userId);
       }
 
-      // STEP 5: Insert PWD record if applicable
       if (formData.isPWD && userId) {
         const cleanedEmergencyNumber = cleanPhoneNumber(formData.emergencyContactNumber);
         

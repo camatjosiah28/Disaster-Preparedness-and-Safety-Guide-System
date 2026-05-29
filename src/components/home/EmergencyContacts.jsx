@@ -64,8 +64,7 @@ const EmergencyContacts = ({ refreshTrigger }) => {
 
   const getLogoPath = (agencyName) => {
     const name = agencyName.toLowerCase();
-    
-    // Barangay Alapan Logos (may space sa filename)
+
     if (name.includes('alapan 1-a') || name.includes('alapan 1a')) {
       return '/logos/alapan 1-a.png';
     }
@@ -76,7 +75,6 @@ const EmergencyContacts = ({ refreshTrigger }) => {
       return '/logos/alapan 1-c.png';
     }
     
-    // City-wide Emergency Logos
     if (name.includes('fire') || name.includes('bfp') || name.includes('bureau of fire')) {
       return '/logos/bfp-logo.png';
     }
@@ -95,12 +93,12 @@ const EmergencyContacts = ({ refreshTrigger }) => {
 
   const getFallbackIcon = (agencyName) => {
     const name = agencyName.toLowerCase();
-    if (name.includes('alapan')) return '🏘️';
-    if (name.includes('fire')) return '🔥';
-    if (name.includes('police')) return '👮‍♂️';
-    if (name.includes('disaster')) return '🛡️';
-    if (name.includes('911')) return '📞';
-    return '📞';
+    if (name.includes('alapan')) return 'BRGY';
+    if (name.includes('fire')) return 'FIRE';
+    if (name.includes('police')) return 'PNP';
+    if (name.includes('disaster')) return 'DRRM';
+    if (name.includes('911')) return '911';
+    return 'HOTLINE';
   };
 
   const handleImageError = (contactId) => {
@@ -155,11 +153,20 @@ const EmergencyContacts = ({ refreshTrigger }) => {
                     onError={() => handleImageError(contact.contact_id)}
                   />
                 ) : (
-                  <span className="fallback-icon" style={{
-                    fontSize: '48px'
+                  <div className="fallback-icon" style={{
+                    width: '80px',
+                    height: '80px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#f3f4f6',
+                    borderRadius: '50%',
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    color: '#f97316'
                   }}>
                     {getFallbackIcon(contact.agency_name)}
-                  </span>
+                  </div>
                 )}
               </div>
               <div className="contact-info" style={{ textAlign: 'center' }}>

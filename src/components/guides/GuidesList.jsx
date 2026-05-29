@@ -24,7 +24,6 @@ const GuidesList = ({ refreshTrigger }) => {
     fetchGuides();
   }, [fetchGuides, refreshTrigger]);
 
-  // Auto-refresh when tab becomes visible
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -38,7 +37,6 @@ const GuidesList = ({ refreshTrigger }) => {
     };
   }, [fetchGuides]);
 
-  // Real-time subscription
   useEffect(() => {
     const subscription = supabase
       .channel('preparedness_guides_changes')

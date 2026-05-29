@@ -30,7 +30,7 @@ const AdminNavbar = ({ sidebarOpen, setSidebarOpen, activeTab, setActiveTab, onL
       padding: '0 24px',
       boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
     }}>
-      {/* Left side - Menu button (laging visible) */}
+      {/* Left side - Menu button (para laging visible) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}

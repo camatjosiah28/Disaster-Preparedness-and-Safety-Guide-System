@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../supabaseClient';
-// Import professional icons
 import { MdPhone, MdGroup, MdLocationOn, MdDirections, MdSchool, MdBusiness, MdSportsCricket, MdShield, MdAdd, MdEdit, MdDelete, MdPeople, MdTrendingUp, MdTrendingDown } from 'react-icons/md';
 import { FaExternalLinkAlt, FaGoogle, FaWaze } from 'react-icons/fa';
 import { useSnackbar } from '../../contexts/SnackbarContext';
@@ -373,7 +372,6 @@ const CentersManagement = ({ refreshTrigger }) => {
                 </div>
               )}
               
-              {/* Occupancy Display with Progress Bar */}
               <div style={{ margin: '12px 0' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px', flexWrap: 'wrap', gap: '5px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

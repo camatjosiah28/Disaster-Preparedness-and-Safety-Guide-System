@@ -16,7 +16,6 @@ const ContactsList = ({ refreshTrigger }) => {
     if (error) {
       console.error('Error fetching contacts:', error);
     } else if (data) {
-      // Filter out Imus City Rescue (kung meron)
       const filteredData = data.filter(contact => 
         !contact.agency_name.toLowerCase().includes('imus city rescue') &&
         !contact.agency_name.toLowerCase().includes('rescue')
@@ -30,7 +29,6 @@ const ContactsList = ({ refreshTrigger }) => {
     fetchContacts();
   }, [fetchContacts, refreshTrigger]);
 
-  // Auto-refresh when tab becomes visible
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -44,11 +42,9 @@ const ContactsList = ({ refreshTrigger }) => {
     };
   }, [fetchContacts]);
 
-  // Get logo path based on agency
   const getLogoPath = (agencyName) => {
     const name = agencyName.toLowerCase();
     
-    // Barangay Alapan Logos (may space sa filename)
     if (name.includes('alapan 1-a') || name.includes('alapan 1a')) {
       return '/logos/alapan 1-a.png';
     }
@@ -59,7 +55,6 @@ const ContactsList = ({ refreshTrigger }) => {
       return '/logos/alapan 1-c.png';
     }
     
-    // City-wide Emergency Logos
     if (name.includes('fire') || name.includes('bfp') || name.includes('bureau of fire')) {
       return '/logos/bfp-logo.png';
     }
@@ -76,7 +71,6 @@ const ContactsList = ({ refreshTrigger }) => {
     return null;
   };
 
-  // Fallback icon if no logo
   const getFallbackIcon = (agencyName) => {
     const name = agencyName.toLowerCase();
     if (name.includes('alapan')) return '🏘️';
@@ -91,7 +85,6 @@ const ContactsList = ({ refreshTrigger }) => {
     setImageErrors(prev => ({ ...prev, [contactId]: true }));
   };
 
-  // Handle click to call function
   const handleCall = (phoneNumber, agencyName) => {
     const cleanNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
     const telNumber = cleanNumber === '911' ? '911' : cleanNumber;

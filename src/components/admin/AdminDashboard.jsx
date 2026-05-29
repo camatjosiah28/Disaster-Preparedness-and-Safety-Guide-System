@@ -21,7 +21,6 @@ import {
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import { useSnackbar } from '../../contexts/SnackbarContext';
 
-// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -412,7 +411,6 @@ const AdminDashboard = () => {
       backgroundColor: '#f3f4f6', 
       minHeight: '100vh' 
     }}>
-      {/* Header - Responsive */}
       <div style={{ 
         marginBottom: '24px', 
         display: 'flex', 
@@ -467,7 +465,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Critical Alerts Banner - Responsive */}
       {stats.criticalCenters > 0 && (
         <div style={{
           backgroundColor: '#fee2e2',
@@ -490,7 +487,6 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Main Stats Cards - Responsive Grid */}
       <div className="stats-grid" style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
@@ -524,7 +520,6 @@ const AdminDashboard = () => {
         />
       </div>
 
-      {/* Center Status Summary - Responsive Grid */}
       <div className="status-summary" style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
@@ -549,14 +544,12 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Charts Section - Responsive Grid */}
       <div className="charts-section" style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
         gap: '24px',
         marginBottom: '24px'
       }}>
-        {/* Evacuee Trend Line Chart */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
@@ -570,7 +563,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Center Status Distribution */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
@@ -584,7 +576,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Center Capacity vs Occupancy Bar Chart */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
@@ -598,7 +589,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* PWD Mobility Levels */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
@@ -621,7 +611,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Occupancy Rate by Center - Bar Chart */}
       <div style={{ 
         background: 'white', 
         borderRadius: '12px', 
@@ -652,7 +641,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Evacuation Centers Table - Responsive */}
       <div style={{ 
         background: 'white', 
         borderRadius: '12px', 
@@ -731,7 +719,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Recent Alerts Section */}
       <div style={{ 
         background: 'white', 
         borderRadius: '12px', 
@@ -788,7 +775,6 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* Footer - Responsive */}
       <div style={{ 
         textAlign: 'center', 
         padding: '20px', 

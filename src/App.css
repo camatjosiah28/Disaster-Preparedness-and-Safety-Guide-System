@@ -38,15 +38,11 @@ body {
   color: var(--dark); 
   line-height: 1.6;
 }
-
-/* App Container */
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-
-/* Navigation Bar */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -109,15 +105,11 @@ body {
   background: var(--danger);
   animation: slideIn 0.3s ease;
 }
-
-/* Navigation Auth Section */
 .nav-auth {
   display: flex;
   align-items: center;
   gap: 15px;
 }
-
-/* Login Page Logo Styles */
 .auth-logo-container {
   text-align: center;
   margin-bottom: 25px;
@@ -143,7 +135,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Auth Buttons */
 .login-btn-nav {
   background: var(--danger);
   color: white;
@@ -177,7 +168,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Emergency Banner */
 .emergency-banner {
   background: var(--accent);
   color: var(--dark);
@@ -196,7 +186,6 @@ body {
   100% { opacity: 1; }
 }
 
-/* Auth Pages */
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -234,7 +223,6 @@ body {
   font-size: 1.8rem;
 }
 
-/* Register Card Specific */
 .register-card {
   max-width: 550px;
   max-height: 80vh;
@@ -261,7 +249,6 @@ body {
   background: var(--danger-dark);
 }
 
-/* Form Elements */
 .auth-input {
   width: 100%;
   padding: 14px 16px;
@@ -295,7 +282,6 @@ select.auth-input {
   background-size: 1em;
 }
 
-/* Buttons */
 .btn-main {
   width: 100%;
   padding: 14px 20px;
@@ -342,7 +328,6 @@ select.auth-input {
   border-color: var(--gray-dark);
 }
 
-/* PWD Section */
 .pwd-toggle-section {
   display: flex;
   justify-content: space-between;
@@ -385,7 +370,6 @@ select.auth-input {
   cursor: not-allowed;
 }
 
-/* PWD Form Extension */
 .pwd-form-extension {
   background: var(--danger-light);
   padding: 20px;
@@ -406,7 +390,6 @@ select.auth-input {
   margin-top: 0;
 }
 
-/* Checkbox Section */
 .checkbox-section {
   margin: 15px 0;
   padding: 12px;
@@ -431,7 +414,6 @@ select.auth-input {
   accent-color: var(--danger);
 }
 
-/* Main Content Styling */
 .content { 
   padding: 30px 5%; 
   max-width: 1200px; 
@@ -459,7 +441,6 @@ select.auth-input {
   border-radius: 3px;
 }
 
-/* Alert Cards */
 .alert-card {
   background: var(--white);
   padding: 20px;
@@ -501,7 +482,6 @@ select.auth-input {
   color: var(--danger);
 }
 
-/* Cards */
 .card {
   background: var(--white);
   padding: 25px;
@@ -537,7 +517,6 @@ select.auth-input {
   margin-top: 10px;
 }
 
-/* Badge */
 .badge {
   display: inline-block;
   font-size: 0.7rem;
@@ -550,9 +529,6 @@ select.auth-input {
   letter-spacing: 0.5px;
 }
 
-/* ========== LEAFLET MAP STYLES ========== */
-
-/* Map Wrapper */
 .map-wrapper {
   height: 500px;
   width: 100%;
@@ -572,7 +548,6 @@ select.auth-input {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Fix Leaflet controls z-index */
 .leaflet-control {
   z-index: 1000 !important;
 }
@@ -585,7 +560,7 @@ select.auth-input {
 .leaflet-bottom {
   z-index: 1000 !important;
 }
-/* Summary Cards Responsive */
+
 @media (max-width: 640px) {
   .evacuation-map-container > div:first-child {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -604,9 +579,7 @@ select.auth-input {
     font-size: 20px !important;
   }
 }
-/* ========== PWD MANAGEMENT - RESPONSIVE WITH EXPANDABLE ROW ========== */
 
-/* Priority Summary Cards - Mobile */
 @media (max-width: 640px) {
   .pwd-management-container > div:first-child {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -630,7 +603,6 @@ select.auth-input {
   }
 }
 
-/* Expanded Details Grid - Mobile Responsive */
 @media (max-width: 768px) {
   table tr td > div > div[style*="grid-template-columns"] {
     grid-template-columns: 1fr !important;
@@ -653,7 +625,6 @@ select.auth-input {
   }
 }
 
-/* Small Mobile */
 @media (max-width: 480px) {
   .pwd-management-container > div:first-child {
     gap: 6px !important;
@@ -695,14 +666,12 @@ select.auth-input {
   }
 }
 
-/* Tablet */
 @media (min-width: 769px) and (max-width: 1024px) {
   .pwd-management-container > div:first-child {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
-/* Expand button touch-friendly */
 @media (max-width: 768px) {
   table button {
     min-width: 40px !important;
@@ -715,7 +684,6 @@ select.auth-input {
   }
 }
 
-/* Address column fix */
 @media (max-width: 768px) {
   .admin-table-container {
     overflow-x: auto;
@@ -731,7 +699,7 @@ select.auth-input {
     word-break: break-word !important;
   }
 }
-/* Custom marker bounce animation */
+
 @keyframes bounce {
   0%, 100% { transform: rotate(-45deg) translateY(0); }
   50% { transform: rotate(-45deg) translateY(-10px); }
@@ -747,7 +715,6 @@ select.auth-input {
   transform: scale(1.1);
 }
 
-/* Map Legend */
 .map-legend {
   position: absolute;
   bottom: 20px;
@@ -794,7 +761,6 @@ select.auth-input {
 .legend-dot.sports { background-color: #FFD93D; }
 .legend-dot.safe { background-color: #6BCB77; }
 
-/* Popup Styles */
 .leaflet-popup-content {
   margin: 15px !important;
   min-width: 250px;
@@ -997,7 +963,6 @@ select.auth-input {
   gap: 5px;
 }
 
-/* Google Maps Button sa Center Card */
 .google-maps-btn {
   width: 100%;
   margin-top: 15px;
@@ -1046,7 +1011,6 @@ select.auth-input {
   border: 1px solid var(--accent);
 }
 
-/* Loading Map */
 .loading-map {
   text-align: center;
   padding: 60px;
@@ -1056,16 +1020,12 @@ select.auth-input {
   border-radius: var(--border-radius-lg);
 }
 
-/* ========== EMERGENCY CONTACTS COMPONENT STYLES ========== */
-
-/* Container */
 .contacts-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* Contacts Grid */
 .contacts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1073,7 +1033,6 @@ select.auth-input {
   margin-top: 20px;
 }
 
-/* Contact Card */
 .contact-card {
   background: var(--white);
   border-radius: 12px;
@@ -1086,7 +1045,6 @@ select.auth-input {
   align-items: center;
 }
 
-/* Logo Wrapper */
 .contact-icon-wrapper {
   width: 80px;
   height: 80px;
@@ -1100,7 +1058,6 @@ select.auth-input {
   margin-bottom: 15px;
 }
 
-/* Logo Image */
 .official-logo {
   width: 70%;
   height: 70%;
@@ -1108,12 +1065,10 @@ select.auth-input {
   object-position: center;
 }
 
-/* Fallback Icon */
 .fallback-icon {
   font-size: 40px;
 }
 
-/* Contact Info */
 .contact-info {
   text-align: center;
   width: 100%;
@@ -1141,7 +1096,6 @@ select.auth-input {
   margin: 0;
 }
 
-/* Call Button */
 .call-button {
   background: var(--danger);
   color: white;
@@ -1161,7 +1115,6 @@ select.auth-input {
   box-shadow: 0 4px 8px rgba(211, 47, 47, 0.3);
 }
 
-/* Loading Spinner */
 .loading-contacts {
   text-align: center;
   padding: 60px;
@@ -1182,7 +1135,6 @@ select.auth-input {
   to { transform: rotate(360deg); }
 }
 
-/* No Data */
 .no-data {
   text-align: center;
   padding: 60px;
@@ -1192,7 +1144,6 @@ select.auth-input {
   font-size: 1rem;
 }
 
-/* Guides Grid */
 .guides-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1243,7 +1194,6 @@ select.auth-input {
   transform: translateX(5px);
 }
 
-/* Profile Card */
 .profile-card {
   background: var(--white);
   padding: 30px;
@@ -1353,7 +1303,6 @@ select.auth-input {
   color: var(--accent-dark);
 }
 
-/* Links */
 .link { 
   color: var(--danger); 
   cursor: pointer; 
@@ -1367,7 +1316,6 @@ select.auth-input {
   text-decoration: none;
 }
 
-/* Dividers */
 .divider { 
   margin: 25px 0; 
   border: 0; 
@@ -1387,7 +1335,6 @@ select.auth-input {
   font-size: 0.9rem;
 }
 
-/* Loading States */
 .loading-spinner {
   display: inline-block;
   width: 20px;
@@ -1399,14 +1346,12 @@ select.auth-input {
   margin-right: 10px;
 }
 
-/* Alert Types */
 .alert-weather { border-left-color: var(--blue); }
 .alert-flood { border-left-color: var(--blue); }
 .alert-earthquake { border-left-color: var(--accent); }
 .alert-fire { border-left-color: var(--danger); }
 .alert-evacuation { border-left-color: var(--green); }
 
-/* Animations */
 .animate-slide {
   animation: slideIn 0.3s ease-out;
 }
@@ -1422,9 +1367,6 @@ select.auth-input {
   }
 }
 
-/* ========== USER PROFILE EDIT STYLES ========== */
-
-/* Profile Card Enhancements */
 .profile-card {
   background: var(--white);
   border-radius: var(--border-radius-lg);
@@ -1486,7 +1428,6 @@ select.auth-input {
   flex: 1;
 }
 
-/* Edit Input Styles */
 .edit-input {
   flex: 1;
   padding: 8px 12px;
@@ -1511,7 +1452,6 @@ select.auth-input {
   gap: 8px;
 }
 
-/* PWD Section */
 .pwd-divider {
   margin: 20px 0;
   border: none;
@@ -1548,7 +1488,6 @@ select.auth-input {
   min-width: 130px;
 }
 
-/* Profile Action Buttons */
 .profile-actions {
   display: flex;
   gap: 10px;
@@ -1564,7 +1503,6 @@ select.auth-input {
   flex: 1;
 }
 
-/* Loading Profile */
 .loading-profile {
   text-align: center;
   padding: 60px;
@@ -1614,15 +1552,11 @@ select.auth-input {
   color: #6b7280;
 }
 
-/* ========== ADMIN PANEL STYLES ========== */
-
-/* Admin Layout */
 .admin-app {
   min-height: 100vh;
   background: var(--light);
 }
 
-/* Admin Navbar */
 .admin-navbar {
   background: var(--dark);
   border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -1653,7 +1587,6 @@ select.auth-input {
   font-weight: normal;
 }
 
-/* Notification Bell */
 .notification-bell {
   position: relative;
   cursor: pointer;
@@ -1683,7 +1616,6 @@ select.auth-input {
   text-align: center;
 }
 
-/* User Menu */
 .admin-user-menu {
   position: relative;
 }
@@ -1731,7 +1663,6 @@ select.auth-input {
   opacity: 0.7;
 }
 
-/* Dropdown Menus */
 .admin-dropdown {
   position: absolute;
   top: 100%;
@@ -1857,7 +1788,6 @@ select.auth-input {
   margin: 5px 0;
 }
 
-/* Admin Sidebar - RESPONSIVE HAMBURGER */
 .admin-sidebar {
   position: fixed;
   top: 70px;
@@ -1877,7 +1807,6 @@ select.auth-input {
   transform: translateX(0);
 }
 
-/* Sidebar overlay */
 .admin-sidebar-overlay {
   position: fixed;
   top: 0;
@@ -1889,7 +1818,6 @@ select.auth-input {
   animation: fadeIn 0.3s ease;
 }
 
-/* Sidebar close button */
 .sidebar-close-btn {
   position: absolute;
   top: 15px;
@@ -1941,14 +1869,12 @@ select.auth-input {
   height: 20px;
 }
 
-/* Main Content Offset for Admin */
 .admin-main-content {
   margin-left: 0;
   padding-top: 70px;
   transition: margin-left 0.3s ease;
 }
 
-/* Admin Cards */
 .admin-stat-card {
   background: var(--white);
   padding: 20px;
@@ -1986,7 +1912,6 @@ select.auth-input {
   gap: 5px;
 }
 
-/* Admin Tables */
 .admin-table-container {
   background: var(--white);
   border-radius: var(--border-radius-lg);
@@ -2025,7 +1950,6 @@ select.auth-input {
   background: var(--light-gray);
 }
 
-/* Admin Buttons */
 .admin-btn {
   padding: 8px 16px;
   border-radius: var(--border-radius-sm);
@@ -2055,7 +1979,6 @@ select.auth-input {
   background: var(--gray);
 }
 
-/* Admin Modal */
 .admin-modal-overlay {
   position: fixed;
   top: 0;
@@ -2116,7 +2039,6 @@ select.auth-input {
   flex-wrap: wrap;
 }
 
-/* Form Styles for Admin */
 .admin-form-group {
   margin-bottom: 20px;
 }
@@ -2154,7 +2076,6 @@ select.auth-input {
   font-family: inherit;
 }
 
-/* Admin Status Badges */
 .admin-status {
   display: inline-block;
   padding: 4px 10px;
@@ -2178,7 +2099,6 @@ select.auth-input {
   color: var(--accent);
 }
 
-/* Admin Grid Layout */
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -2186,7 +2106,6 @@ select.auth-input {
   margin-bottom: 20px;
 }
 
-/* Admin Action Icons */
 .admin-action-icon {
   padding: 6px;
   border-radius: var(--border-radius-sm);
@@ -2216,7 +2135,6 @@ select.auth-input {
   background: var(--danger-light);
 }
 
-/* Admin Loading Spinner */
 .admin-loading {
   display: flex;
   align-items: center;
@@ -2224,16 +2142,12 @@ select.auth-input {
   min-height: 400px;
 }
 
-/* ========== RESPONSIVE DESIGN (LAHAT NG DEVICE) ========== */
-
-/* Large Desktop */
 @media (min-width: 1440px) {
   .content {
     max-width: 1400px;
   }
 }
 
-/* Desktop and Tablet */
 @media (max-width: 1024px) {
   .centers-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2320,7 +2234,6 @@ select.auth-input {
     grid-template-columns: 1fr;
   }
   
-  /* Map Legend */
   .map-legend {
     bottom: 10px;
     right: 10px;
@@ -2343,7 +2256,6 @@ select.auth-input {
     height: 16px;
   }
   
-  /* Popup */
   .leaflet-popup-content {
     min-width: 220px;
     max-width: 260px;
@@ -2385,7 +2297,6 @@ select.auth-input {
     width: 100%;
   }
   
-  /* Emergency Contacts */
   .contacts-container {
     padding: 15px;
   }
@@ -2407,7 +2318,6 @@ select.auth-input {
     font-size: 1rem;
   }
   
-  /* Admin Sidebar - Mobile */
   .admin-sidebar {
     width: 280px;
   }
@@ -2416,7 +2326,6 @@ select.auth-input {
     margin-left: 0 !important;
   }
   
-  /* Admin Notifications */
   .notifications-dropdown {
     width: calc(100vw - 40px);
     right: -60px;
@@ -2430,19 +2339,16 @@ select.auth-input {
     font-size: 1.5rem;
   }
   
-  /* Admin Tables */
   .admin-table th,
   .admin-table td {
     padding: 8px 10px;
     font-size: 0.8rem;
   }
   
-  /* Admin Grid */
   .admin-grid {
     grid-template-columns: 1fr;
   }
   
-  /* Cards */
   .stat-card {
     padding: 16px;
   }
@@ -2451,14 +2357,12 @@ select.auth-input {
     font-size: 24px;
   }
   
-  /* Profile section */
   .pwd-section p {
     flex-direction: column;
     align-items: flex-start;
   }
 }
 
-/* Small Mobile */
 @media (max-width: 480px) {
   .nav-links {
     gap: 8px;
@@ -2522,7 +2426,6 @@ select.auth-input {
     font-size: 2rem;
   }
   
-  /* Emergency Contacts */
   .contacts-container {
     padding: 10px;
   }
@@ -2563,7 +2466,6 @@ select.auth-input {
     width: 100%;
   }
   
-  /* Admin Modal */
   .admin-modal {
     width: 95%;
     margin: 10px;
@@ -2584,14 +2486,12 @@ select.auth-input {
     font-size: 0.7rem;
   }
   
-  /* Admin Sidebar */
   .admin-sidebar {
     width: 100%;
     max-width: 280px;
   }
 }
 
-/* Landscape Mode */
 @media (max-height: 600px) and (orientation: landscape) {
   .map-wrapper {
     height: 300px;
@@ -2607,7 +2507,6 @@ select.auth-input {
   }
 }
 
-/* Print Styles */
 @media print {
   .navbar,
   .emergency-banner,
@@ -2649,7 +2548,6 @@ select.auth-input {
   }
 }
 
-/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -2660,7 +2558,6 @@ select.auth-input {
   }
 }
 
-/* Focus States for Accessibility */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -2669,7 +2566,6 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
-/* Success and Error Messages */
 .success-message {
   background: var(--green-light);
   color: var(--green);
@@ -2690,7 +2586,6 @@ a:focus-visible {
   animation: slideIn 0.3s ease;
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -2710,7 +2605,6 @@ a:focus-visible {
   background: #a8a8a8;
 }
 
-/* Loading Placeholder for Map */
 .map-loading {
   height: 100%;
   width: 100%;
@@ -2730,7 +2624,6 @@ a:focus-visible {
   100% { background-position: -200% 0; }
 }
 
-/* Tooltip Styles */
 [data-tooltip] {
   position: relative;
   cursor: help;
@@ -2760,7 +2653,6 @@ a:focus-visible {
   bottom: calc(100% + 5px);
 }
 
-/* Touch-friendly targets for mobile */
 @media (max-width: 768px) {
   button,
   .admin-action-icon,
@@ -2779,7 +2671,6 @@ a:focus-visible {
     font-size: 16px !important;
   }
 }
-/* Fix overlapping issues */
 .content {
   padding: 30px 5%;
   max-width: 1200px;
@@ -2790,7 +2681,6 @@ a:focus-visible {
   z-index: 1;
 }
 
-/* Ensure alerts don't overlap */
 .alerts-list-container {
   display: flex;
   flex-direction: column;
@@ -2799,7 +2689,6 @@ a:focus-visible {
   z-index: 1;
 }
 
-/* Fix navbar z-index issues */
 nav {
   position: sticky;
   top: 0;
@@ -2807,7 +2696,6 @@ nav {
   background: #0f0f1a;
 }
 
-/* Fix mobile menu overlapping */
 .mobile-menu-dropdown {
   z-index: 999;
 }
@@ -2816,13 +2704,11 @@ nav {
   z-index: 998;
 }
 
-/* Ensure main content is below navbar but above nothing else */
 main, .content {
   position: relative;
   z-index: 1;
 }
 
-/* Admin Sidebar Desktop */
 @media (min-width: 769px) {
   .admin-sidebar {
     transform: translateX(0);
@@ -2841,7 +2727,6 @@ main, .content {
   }
 }
 
-/* Admin Sidebar Mobile */
 @media (max-width: 768px) {
   .admin-sidebar {
     transform: translateX(-100%);

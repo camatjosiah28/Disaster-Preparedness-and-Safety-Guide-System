@@ -22,8 +22,7 @@ const UserProfile = ({ refreshTrigger }) => {
     newPassword: '',
     confirmPassword: ''
   });
-
-  // Password validation states
+  
   const [hasUppercase, setHasUppercase] = useState(false);
   const [hasNumber, setHasNumber] = useState(false);
   const [hasMinLength, setHasMinLength] = useState(false);
@@ -34,14 +33,12 @@ const UserProfile = ({ refreshTrigger }) => {
     barangay: ''
   });
 
-  // Barangay options
   const barangays = [
     { value: 'Alapan 1-A', label: 'Alapan 1-A' },
     { value: 'Alapan 1-B', label: 'Alapan 1-B' },
     { value: 'Alapan 1-C', label: 'Alapan 1-C' }
   ];
 
-  // Function to parse address into street and barangay
   const parseAddress = (fullAddress) => {
     if (!fullAddress) return { street: '', barangay: '' };
     const parts = fullAddress.split(',');
@@ -51,7 +48,6 @@ const UserProfile = ({ refreshTrigger }) => {
     };
   };
 
-  // Validate new password
   const validateNewPassword = (password) => {
     setHasUppercase(/[A-Z]/.test(password));
     setHasNumber(/[0-9]/.test(password));
@@ -66,7 +62,6 @@ const UserProfile = ({ refreshTrigger }) => {
     validateNewPassword(newPassword);
   };
 
-  // Fetch user profile directly from Supabase
   const fetchUserProfile = useCallback(async () => {
     if (!user?.id) return;
     
@@ -86,7 +81,6 @@ const UserProfile = ({ refreshTrigger }) => {
     setLoading(false);
   }, [user?.id, showSnackbar]);
 
-  // Fetch PWD info
   const fetchPWDInfo = useCallback(async () => {
     if (!profileData?.user_id) return;
     
@@ -103,12 +97,10 @@ const UserProfile = ({ refreshTrigger }) => {
     }
   }, [profileData?.user_id]);
 
-  // Initial load
   useEffect(() => {
     fetchUserProfile();
   }, [fetchUserProfile, refreshTrigger]);
 
-  // Load PWD info when profile is loaded
   useEffect(() => {
     if (profileData) {
       fetchPWDInfo();
@@ -151,7 +143,6 @@ const UserProfile = ({ refreshTrigger }) => {
       
       showSnackbar('Profile updated successfully', 'success');
       
-      // Refresh the profile data
       await fetchUserProfile();
       
       setIsEditing(false);
@@ -164,13 +155,11 @@ const UserProfile = ({ refreshTrigger }) => {
   };
 
   const handleChangePassword = async () => {
-    // Validate current password
     if (!passwordForm.currentPassword) {
       showSnackbar('Please enter your current password', 'error');
       return;
     }
     
-    // Validate new password
     if (!passwordForm.newPassword) {
       showSnackbar('Please enter a new password', 'error');
       return;
@@ -196,7 +185,6 @@ const UserProfile = ({ refreshTrigger }) => {
       return;
     }
     
-    // Check if new password is same as current
     if (passwordForm.newPassword === passwordForm.currentPassword) {
       showSnackbar('New password cannot be the same as your current password', 'error');
       return;
@@ -205,7 +193,6 @@ const UserProfile = ({ refreshTrigger }) => {
     setIsChangingPassword(true);
     
     try {
-      // First, verify current password by trying to sign in
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: profileData.email,
         password: passwordForm.currentPassword
@@ -404,8 +391,6 @@ const UserProfile = ({ refreshTrigger }) => {
           )}
         </div>
       </div>
-
-      {/* Change Password Modal */}
       {showPasswordModal && (
         <div className="admin-modal-overlay" onClick={() => setShowPasswordModal(false)}>
           <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
@@ -414,7 +399,6 @@ const UserProfile = ({ refreshTrigger }) => {
               <button className="admin-modal-close" onClick={() => setShowPasswordModal(false)}>×</button>
             </div>
             <div className="admin-modal-body">
-              {/* Current Password */}
               <div className="admin-form-group">
                 <label className="admin-form-label">Current Password</label>
                 <div style={{ position: 'relative' }}>
@@ -444,8 +428,6 @@ const UserProfile = ({ refreshTrigger }) => {
                   </button>
                 </div>
               </div>
-
-              {/* New Password */}
               <div className="admin-form-group">
                 <label className="admin-form-label">New Password</label>
                 <div style={{ position: 'relative' }}>
@@ -474,7 +456,6 @@ const UserProfile = ({ refreshTrigger }) => {
                     {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {/* Password requirements */}
                 {passwordForm.newPassword && (
                   <div style={{ marginTop: '8px', fontSize: '0.7rem', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
                     <span style={{ color: hasMinLength ? '#4caf50' : '#999' }}>

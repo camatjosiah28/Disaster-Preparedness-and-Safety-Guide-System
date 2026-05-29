@@ -12,8 +12,6 @@ const Login = ({ setView }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Forgot password states
   const [resetEmail, setResetEmail] = useState('');
   const [isResetting, setIsResetting] = useState(false);
   const [resetSent, setResetSent] = useState(false);

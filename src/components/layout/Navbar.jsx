@@ -15,7 +15,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
     await logout();
   };
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -31,7 +30,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
     };
   }, [isMobileMenuOpen]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -45,7 +43,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close mobile menu when resizing to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -130,7 +127,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
           <span style={{ color: '#f97316' }}>Ready</span>
         </div>
 
-        {/* Desktop Navigation Links - Hidden on mobile */}
         <ul style={{
           display: 'flex',
           gap: '8px',
@@ -253,7 +249,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
                 />
               </button>
 
-              {/* Dropdown Menu */}
               {isDropdownOpen && (
                 <div style={{
                   position: 'absolute',
@@ -352,7 +347,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
             </button>
           )}
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="mobile-menu-btn"
@@ -375,7 +369,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
         </div>
       </nav>
 
-      {/* Mobile Menu Dropdown - HIGH Z-INDEX para nasa ibabaw ng lahat */}
       <div
         ref={mobileMenuRef}
         className="mobile-menu-dropdown"
@@ -437,7 +430,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
             );
           })}
           
-          {/* Show user info in mobile menu when logged in */}
           {user && (
             <div style={{
               padding: '16px 24px',
@@ -475,7 +467,6 @@ const Navbar = ({ activeTab, setActiveTab, setView }) => {
         </ul>
       </div>
 
-      {/* Overlay when mobile menu is open */}
       {isMobileMenuOpen && (
         <div 
           className="mobile-menu-overlay"

@@ -133,7 +133,6 @@ const EmergencyContactsManagement = () => {
         </button>
       </div>
 
-      {/* Table Container - Responsive with horizontal scroll */}
       <div className="admin-table-container" style={{ 
         overflowX: 'auto', 
         WebkitOverflowScrolling: 'touch',

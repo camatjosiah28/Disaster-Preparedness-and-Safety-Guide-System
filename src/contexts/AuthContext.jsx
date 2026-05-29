@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 
@@ -18,7 +17,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Fetch user profile from your 'users' table
   const fetchUserProfile = async (authId) => {
     try {
       console.log('📝 Fetching user profile for auth_id:', authId);
@@ -44,12 +42,9 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   };
-
-  // Clear all auth data from storage
   const clearAuthStorage = () => {
     console.log('🧹 Clearing all auth storage...');
     
-    // Clear localStorage items
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -58,11 +53,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
     keysToRemove.forEach(key => localStorage.removeItem(key));
-    
-    // Clear sessionStorage
     sessionStorage.clear();
-    
-    // Clear cookies
     document.cookie.split(";").forEach(function(c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
@@ -70,7 +61,6 @@ export const AuthProvider = ({ children }) => {
     console.log('✅ Auth storage cleared');
   };
 
-  // Check current user on app load
   const checkUser = async () => {
     try {
       console.log('🔍 Checking current user...');
@@ -110,7 +100,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Initialize auth listener
   useEffect(() => {
     let mounted = true;
     
@@ -159,7 +148,6 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  // Login function
   const login = async (email, password) => {
     try {
       console.log('🔐 Logging in:', email);
@@ -185,12 +173,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Register function with PWD support
   const register = async (userData) => {
     try {
       console.log('📝 Registering user:', userData.email);
       
-      // 1. Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
@@ -205,7 +191,6 @@ export const AuthProvider = ({ children }) => {
       if (authError) throw authError;
 
       if (authData.user) {
-        // 2. Create record in users table
         const insertData = {
           auth_id: authData.user.id,
           full_name: userData.full_name,
@@ -229,14 +214,12 @@ export const AuthProvider = ({ children }) => {
           return { success: false, error: 'Failed to create user profile' };
         }
 
-        // 3. Get the user_id for PWD registration
         const { data: userRecord, error: fetchError } = await supabase
           .from('users')
           .select('user_id')
           .eq('auth_id', authData.user.id)
           .single();
 
-        // 4. PWD Registration if applicable
         if (userData.isPWD && userData.disabilityType && userRecord) {
           const pwdData = {
             user_id: userRecord.user_id,
@@ -280,36 +263,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ FIXED: Logout function - mas aggressive na pag-clear
   const logout = async () => {
     console.log('🚪 Logging out...');
     
     try {
-      // 1. Clear state muna
       setUser(null);
       setUserProfile(null);
-      
-      // 2. Clear all storage
       clearAuthStorage();
-      
-      // 3. Sign out from Supabase
+  
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error('Sign out error:', error);
       }
       
-      // 4. Force clear session
       await supabase.auth.setSession(null);
       
       console.log('✅ Logout successful');
       
-      // 5. Redirect to login page with cache busting
       window.location.href = '/login?t=' + Date.now();
       
     } catch (err) {
       console.error('Logout error:', err);
-      // Even if may error, clear pa rin and redirect
       setUser(null);
       setUserProfile(null);
       clearAuthStorage();
@@ -317,7 +292,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Refresh profile
   const refreshProfile = async () => {
     if (user?.id) {
       return await fetchUserProfile(user.id);
@@ -325,7 +299,6 @@ export const AuthProvider = ({ children }) => {
     return null;
   };
 
-  // Compute isAdmin from userProfile
   const isAdmin = userProfile?.role === 'admin';
 
   console.log('📊 Auth State:', { 

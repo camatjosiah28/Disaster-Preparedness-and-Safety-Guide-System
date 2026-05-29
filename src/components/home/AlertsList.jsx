@@ -21,12 +21,10 @@ const AlertsList = ({ refreshTrigger }) => {
     setLoading(false);
   }, []);
 
-  // Fetch on mount and when refreshTrigger changes
   useEffect(() => {
     fetchAlerts();
   }, [fetchAlerts, refreshTrigger]);
 
-  // Optional: Auto-refresh when tab becomes visible again
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -41,7 +39,6 @@ const AlertsList = ({ refreshTrigger }) => {
     };
   }, [fetchAlerts]);
 
-  // Optional: Real-time subscription for automatic updates
   useEffect(() => {
     const subscription = supabase
       .channel('alerts_changes')
@@ -53,7 +50,7 @@ const AlertsList = ({ refreshTrigger }) => {
           filter: 'status=eq.Active'
         }, 
         () => {
-          fetchAlerts(); // Re-fetch when alerts change
+          fetchAlerts();
         }
       )
       .subscribe();

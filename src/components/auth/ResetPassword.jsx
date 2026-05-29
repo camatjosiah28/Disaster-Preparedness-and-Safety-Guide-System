@@ -18,15 +18,12 @@ const ResetPassword = () => {
 
   useEffect(() => {
     const handleResetSession = async () => {
-      // Get the full URL
       const fullUrl = window.location.href;
       console.log('Full URL:', fullUrl);
       
-      // Extract token from hash
       const hash = window.location.hash;
       console.log('Hash:', hash);
       
-      // Remove the leading '#'
       const hashParams = new URLSearchParams(hash.substring(1));
       const accessToken = hashParams.get('access_token');
       const refreshToken = hashParams.get('refresh_token');
